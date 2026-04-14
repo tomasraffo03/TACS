@@ -9,7 +9,13 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class CategoriaFigurita {
+public class CondicionImpl implements Condicion {
     private String id;
     private String nombre;
+    private String descripcion;
+
+    @Override
+    public Boolean cumpleCondicion(Oferta oferta) {
+        return true;
+    }
 }
