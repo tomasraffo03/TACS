@@ -32,6 +32,7 @@ const SubastasPage       = lazy(() => import('../pages/SubastasPage'));
 const SubNuevaPage       = lazy(() => import('../pages/subastas/NuevaPage'));
 const SubActivasPage     = lazy(() => import('../pages/subastas/ActivasPage'));
 const SubMiasPage        = lazy(() => import('../pages/subastas/MiasPage'));
+const SubParticipandoPage = lazy(() => import('../pages/subastas/ParticipandoPage'));
 
 // Admin (solo rol "admin")
 const AdminPage          = lazy(() => import('../pages/AdminPage'));
@@ -83,9 +84,10 @@ const router = createBrowserRouter([
             path: 'subastas',
             element: <SubastasPage />,
             children: [
-              { path: 'nueva',   element: <SubNuevaPage /> },
-              { path: 'activas', element: <SubActivasPage /> },
-              { path: 'mias',    element: <SubMiasPage /> },
+              { path: 'nueva',        element: <SubNuevaPage /> },
+              { path: 'activas',      element: <SubActivasPage /> },
+              { path: 'mias',         element: <SubMiasPage /> },
+              { path: 'participando', element: <SubParticipandoPage /> },
             ],
           },
         ],

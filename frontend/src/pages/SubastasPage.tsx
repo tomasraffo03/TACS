@@ -1,9 +1,10 @@
 import { NavLink, Outlet, useMatch } from 'react-router-dom';
 
 const subLinks = [
-  { to: 'nueva',   label: 'Nueva' },
-  { to: 'activas', label: 'Activas' },
-  { to: 'mias',    label: 'Mis Subastas' },
+  { to: 'activas',     label: 'Activas' },
+  { to: 'participando', label: 'Participando' },
+  { to: 'mias',        label: 'Mis Subastas' },
+  { to: 'nueva',       label: '+ Nueva' },
 ];
 
 export default function SubastasPage() {
@@ -16,8 +17,7 @@ export default function SubastasPage() {
       <nav className="flex gap-2 mb-8 flex-wrap">
         {subLinks.map(({ to, label }) => (
           <NavLink
-            key={to}
-            to={to}
+            key={to} to={to}
             className={({ isActive }) =>
               'px-4 py-1.5 rounded-md text-sm font-medium border transition-all duration-150 no-underline ' +
               (isActive
