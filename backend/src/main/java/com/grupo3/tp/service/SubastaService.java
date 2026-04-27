@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class SubastaService {
@@ -26,6 +27,19 @@ public class SubastaService {
 
     public List<Subasta> obtenerTodas() {
         return repository.findAll();
+    }
+
+    public List<Subasta> obtenerPorUsuario(String usuarioId) {
+        return repository.findAll().stream()
+                .filter(s -> s.getUsuario() != null && usuarioId.equals(s.getUsuario().getId()))
+                .collect(Collectors.toList());
+    }
+
+    public List<Subasta> obtenerParticipando(String usuarioId) {
+        return repository.findAll().stream()
+                .filter(s -> s.getOfertas() != null && s.getOfertas().stream()
+                        .anyMatch(o -> o.getUsuario() != null && usuarioId.equals(o.getUsuario().getId())))
+                .collect(Collectors.toList());
     }
 
     public Optional<Subasta> actualizar(String id, Subasta subasta) {

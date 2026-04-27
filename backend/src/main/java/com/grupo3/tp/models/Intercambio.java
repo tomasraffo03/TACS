@@ -1,5 +1,6 @@
 package com.grupo3.tp.models;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -17,6 +18,7 @@ public class Intercambio {
     private Figurita figurita;
     private Figurita figuritaIntercambiada;
     private Usuario usuarioIntercambiador;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime fecha;
     private SolicitudDeIntercambio solicitud;
 }

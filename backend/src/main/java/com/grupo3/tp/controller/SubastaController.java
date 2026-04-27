@@ -23,6 +23,16 @@ public class SubastaController {
         return ResponseEntity.ok(service.obtenerTodas());
     }
 
+    @GetMapping("/usuario/{usuarioId}")
+    public ResponseEntity<List<Subasta>> getByUsuario(@PathVariable String usuarioId) {
+        return ResponseEntity.ok(service.obtenerPorUsuario(usuarioId));
+    }
+
+    @GetMapping("/participando/{usuarioId}")
+    public ResponseEntity<List<Subasta>> getParticipando(@PathVariable String usuarioId) {
+        return ResponseEntity.ok(service.obtenerParticipando(usuarioId));
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<Subasta> getById(@PathVariable String id) {
         return service.obtenerPorId(id)

@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 @Builder
 public class FiguritaBase {
     private String id;
+    private Integer numero;
     private Seleccion seleccion;
     private Equipo equipo;
     private CategoriaFigurita categoria;

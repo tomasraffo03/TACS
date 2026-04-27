@@ -13,6 +13,8 @@ public class CondicionImpl implements Condicion {
     private String id;
     private String nombre;
     private String descripcion;
+    private String tipo;
+    private String valor;
 
     @Override
     public Boolean cumpleCondicion(Oferta oferta) {
