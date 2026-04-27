@@ -2,11 +2,11 @@ import type { Auction, Sticker } from '../types/auction';
 
 // ── Mock stickers del usuario "demo" ─────────────────────────────────────────
 export const MOCK_MY_STICKERS: Sticker[] = [
-  { id: 's1',  number: 42,  playerName: 'L. Martínez',   country: 'ARG' },
-  { id: 's2',  number: 78,  playerName: 'R. Díaz',       country: 'ARG' },
-  { id: 's3',  number: 115, playerName: 'K. Mbappé',     country: 'FRA' },
-  { id: 's4',  number: 201, playerName: 'J. Bellingham', country: 'ENG' },
-  { id: 's5',  number: 333, playerName: 'V. Osimhen',    country: 'NGA' },
+  { id: 's1', number: 42, playerName: 'L. Martínez', country: 'ARG' },
+  { id: 's2', number: 78, playerName: 'R. Díaz', country: 'ARG' },
+  { id: 's3', number: 115, playerName: 'K. Mbappé', country: 'FRA' },
+  { id: 's4', number: 201, playerName: 'J. Bellingham', country: 'ENG' },
+  { id: 's5', number: 333, playerName: 'V. Osimhen', country: 'NGA' },
 ];
 
 // ── Helpers de tiempo ─────────────────────────────────────────────────────────
@@ -115,7 +115,7 @@ export const MOCK_AUCTIONS: Auction[] = [
         id: 'b7', bidderId: 'u11', bidderUsername: 'super_bidder',
         stickers: [
           { id: 'sy', number: 55, playerName: 'T. Arnold', country: 'ENG' },
-          { id: 'sz', number: 77, playerName: 'G. Jesus',  country: 'BRA' },
+          { id: 'sz', number: 77, playerName: 'G. Jesus', country: 'BRA' },
         ],
         placedAt: p(1),
       },
