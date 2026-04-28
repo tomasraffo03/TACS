@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import type { AuctionCondition, AuctionConditionType } from '../../types/auction';
+import type { AuctionCondition } from '../../types/auction';
 
 // ── Países disponibles ────────────────────────────────────────────────────────
 export const WC_COUNTRIES = [
@@ -10,17 +10,17 @@ export const WC_COUNTRIES = [
 
 // ── Tipos de condición disponibles ───────────────────────────────────────────
 // Para agregar una nueva: agregar aquí + manejar en buildCondition() + en BidForm
-const CONDITION_TYPES: { type: AuctionConditionType; label: string }[] = [
-  { type: 'min_stickers',     label: 'Cantidad mínima de figuritas' },
-  { type: 'country',          label: 'De una selección específica' },
+const CONDITION_TYPES: { type: any; label: string }[] = [
+  { type: 'min_stickers', label: 'Cantidad mínima de figuritas' },
+  { type: 'country', label: 'De una selección específica' },
   { type: 'specific_sticker', label: 'Figurita específica requerida' },
 ];
 
 // ── Label legible de una condición ────────────────────────────────────────────
 export function conditionLabel(c: AuctionCondition): string {
   switch (c.type) {
-    case 'min_stickers':     return `Mínimo ${c.value} figurita${c.value !== 1 ? 's' : ''}`;
-    case 'country':          return `Solo de ${c.value}`;
+    case 'min_stickers': return `Mínimo ${c.value} figurita${c.value !== 1 ? 's' : ''}`;
+    case 'country': return `Solo de ${c.value}`;
     case 'specific_sticker': return `Debe incluir #${c.value}`;
   }
 }
@@ -32,9 +32,9 @@ interface ConditionsBuilderProps {
 }
 
 export default function ConditionsBuilder({ conditions, onChange }: ConditionsBuilderProps) {
-  const [type, setType]           = useState<AuctionConditionType>('min_stickers');
-  const [numValue, setNumValue]   = useState('2');
-  const [country, setCountry]     = useState('ARG');
+  const [type, setType] = useState<any>('min_stickers');
+  const [numValue, setNumValue] = useState('2');
+  const [country, setCountry] = useState('ARG');
   const [stickerNum, setStickerNum] = useState('');
 
   const remove = (i: number) => onChange(conditions.filter((_, idx) => idx !== i));
@@ -105,7 +105,7 @@ export default function ConditionsBuilder({ conditions, onChange }: ConditionsBu
                 aria-label="Eliminar"
               >
                 <svg viewBox="0 0 8 8" fill="none" className="w-2 h-2">
-                  <path d="M1 1l6 6M7 1 1 7" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+                  <path d="M1 1l6 6M7 1 1 7" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
                 </svg>
               </button>
             </span>
@@ -116,7 +116,7 @@ export default function ConditionsBuilder({ conditions, onChange }: ConditionsBu
       {/* Fila para agregar */}
       <div className="flex items-center gap-2 flex-wrap">
         <select
-          value={type} onChange={(e) => setType(e.target.value as AuctionConditionType)}
+          value={type} onChange={(e) => setType(e.target.value as any)}
           className="flex-1 min-w-[180px] bg-surface border border-border rounded-lg px-3 py-2 text-sm text-text focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
         >
           {CONDITION_TYPES.map(({ type: t, label }) => <option key={t} value={t}>{label}</option>)}

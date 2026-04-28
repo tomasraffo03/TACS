@@ -1,4 +1,4 @@
-import { Navigate, Outlet, useLocation } from 'react-router-dom';
+import { Navigate, Outlet } from 'react-router-dom';
 import { useAuth } from '../auth/useAuth';
 
 interface PrivateRouteProps {
@@ -6,8 +6,8 @@ interface PrivateRouteProps {
 }
 
 export default function PrivateRoute({ requiredRole }: PrivateRouteProps) {
-  const { isAuthenticated, user } = useAuth();
-  const location = useLocation();
+  const { user } = useAuth();
+  // const location = useLocation();
 
   //bypass
   // if (!isAuthenticated) {
