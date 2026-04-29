@@ -1,21 +1,29 @@
 import { createContext, useContext, useState, ReactNode } from 'react';
 
+interface User {
+  username: string;
+  email: string;
+  role: string;
+  avatar?: string; // base64 o URL
+}
+
 interface AuthContextType {
   isAuthenticated: boolean;
-  user: { username: string; role: string } | null;
+  user: User | null;
   login: (username: string, password: string) => boolean;
   logout: () => void;
+  updateUser: (data: Partial<Pick<User, 'username' | 'email' | 'avatar'>>) => void;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<AuthContextType['user']>(null);
+  const [user, setUser] = useState<User | null>(null);
 
   const login = (username: string, password: string): boolean => {
     // Mock auth: cualquier usuario con password "1234" es válido
     if (password === '1234') {
-      setUser({ username, role: username === 'admin' ? 'admin' : 'user' });
+      setUser({ username, email: '', role: username === 'admin' ? 'admin' : 'user' });
       return true;
     }
     return false;
@@ -23,8 +31,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const logout = () => setUser(null);
 
+  const updateUser = (data: Partial<Pick<User, 'username' | 'email' | 'avatar'>>) => {
+    setUser((prev) => (prev ? { ...prev, ...data } : prev));
+  };
+
   return (
-    <AuthContext.Provider value={{ isAuthenticated: !!user, user, login, logout }}>
+    <AuthContext.Provider value={{ isAuthenticated: !!user, user, login, logout, updateUser }}>
       {children}
     </AuthContext.Provider>
   );

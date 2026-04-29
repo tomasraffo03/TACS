@@ -5,14 +5,16 @@ import MainLayout from '../layouts/MainLayout';
 import PrivateRoute from '../components/PrivateRoute';
 
 // ── Páginas públicas ──────────────────────────────────────────────────────────
-const LoginPage = lazy(() => import('../pages/LoginPage'));
+const LoginPage    = lazy(() => import('../pages/login/LoginPage'));
+const RegisterPage = lazy(() => import('../pages/registro/RegisterPage'));
 
 // ── Páginas protegidas ────────────────────────────────────────────────────────
-const DashboardPage      = lazy(() => import('../pages/DashboardPage'));
+const DashboardPage      = lazy(() => import('../pages/home/DashboardPage'));
 const BuscarPage         = lazy(() => import('../pages/BuscarPage'));
 const IntercambiosPage   = lazy(() => import('../pages/IntercambiosPage'));
 const NotificacionesPage = lazy(() => import('../pages/NotificacionesPage'));
-const PerfilPage         = lazy(() => import('../pages/PerfilPage'));
+const PerfilPage         = lazy(() => import('../pages/perfil/PerfilPage'));
+const HistorialPage      = lazy(() => import('../pages/perfil/HistorialPage'));
 
 // Colección
 const ColeccionPage      = lazy(() => import('../pages/ColeccionPage'));
@@ -36,11 +38,9 @@ const AdminPage          = lazy(() => import('../pages/AdminPage'));
 
 // ── Router ────────────────────────────────────────────────────────────────────
 const router = createBrowserRouter([
-  // Ruta pública
-  {
-    path: '/login',
-    element: <LoginPage />,
-  },
+  // Rutas públicas
+  { path: '/login',    element: <LoginPage /> },
+  { path: '/register', element: <RegisterPage /> },
 
   // Rutas protegidas — cualquier usuario autenticado
   {
@@ -54,7 +54,8 @@ const router = createBrowserRouter([
           { path: 'buscar',         element: <BuscarPage /> },
           { path: 'intercambios',   element: <IntercambiosPage /> },
           { path: 'notificaciones', element: <NotificacionesPage /> },
-          { path: 'perfil',         element: <PerfilPage /> },
+          { path: 'perfil',          element: <PerfilPage /> },
+          { path: 'perfil/historial', element: <HistorialPage /> },
 
           // Colección
           {

@@ -68,9 +68,12 @@ export default function MainLayout() {
   return (
     <div className="flex w-screen h-screen overflow-hidden">
       {/* ── Sidebar ── */}
-      <aside className="w-60 min-w-60 h-screen bg-surface border-r border-border flex flex-col overflow-hidden shrink-0">
-        <div className="flex items-center gap-2.5 px-5 h-[52px] text-sm font-black tracking-[0.15em] text-text border-b border-border uppercase shrink-0">
-          <span className="w-2 h-2 rounded-full bg-primary shadow-[0_0_8px_#3CAC3B] shrink-0" />
+      <aside
+        className="w-60 min-w-60 h-screen flex flex-col overflow-hidden shrink-0"
+        style={{ background: 'linear-gradient(160deg, #D82D31 0%, #8B1518 100%)' }}
+      >
+        <div className="flex items-center gap-2.5 px-5 h-[52px] text-sm font-black tracking-[0.15em] text-white uppercase shrink-0" style={{ borderBottom: '1px solid rgba(255,255,255,0.15)' }}>
+          <span className="w-2 h-2 rounded-full bg-white shrink-0" />
           TACS
         </div>
 
@@ -81,10 +84,13 @@ export default function MainLayout() {
               to={to}
               className={({ isActive }) =>
                 'flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium no-underline transition-all duration-150 ' +
-                (isActive
-                  ? 'bg-primary/15 text-primary font-semibold'
-                  : 'text-muted hover:bg-surface2 hover:text-text')
+                (isActive ? 'font-semibold text-white' : 'text-red-200 hover:text-white')
               }
+              style={({ isActive }) => isActive
+                ? { background: 'rgba(255,255,255,0.18)' }
+                : { }}
+              onMouseEnter={e => { if (!(e.currentTarget as HTMLElement).classList.contains('font-semibold')) (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.08)'; }}
+              onMouseLeave={e => { if (!(e.currentTarget as HTMLElement).classList.contains('font-semibold')) (e.currentTarget as HTMLElement).style.background = ''; }}
             >
               <span className="w-[18px] h-[18px] shrink-0 flex items-center justify-center [&>svg]:w-full [&>svg]:h-full">
                 {icons[icon]}
@@ -97,11 +103,10 @@ export default function MainLayout() {
             <NavLink
               to="/admin"
               className={({ isActive }) =>
-                'flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium no-underline transition-all duration-150 mt-2 border-t border-border pt-4 ' +
-                (isActive
-                  ? 'bg-primary/15 text-primary font-semibold'
-                  : 'text-muted hover:bg-surface2 hover:text-text')
+                'flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium no-underline transition-all duration-150 mt-2 pt-4 ' +
+                (isActive ? 'font-semibold text-white' : 'text-red-200 hover:text-white')
               }
+              style={({ isActive }) => ({ borderTop: '1px solid rgba(255,255,255,0.15)', ...(isActive ? { background: 'rgba(255,255,255,0.18)' } : {}) })}
             >
               <span className="w-[18px] h-[18px] shrink-0 flex items-center justify-center [&>svg]:w-full [&>svg]:h-full">
                 {icons.admin}
@@ -111,18 +116,25 @@ export default function MainLayout() {
           )}
         </nav>
 
-        <div className="flex items-center gap-3 px-4 py-4 border-t border-border shrink-0">
-          <div className="w-8 h-8 rounded-full bg-primary/15 border border-primary text-primary font-bold text-xs flex items-center justify-center shrink-0">
-            {user?.username?.[0]?.toUpperCase() ?? '?'}
-          </div>
+        <div className="flex items-center gap-3 px-4 py-4 shrink-0" style={{ borderTop: '1px solid rgba(255,255,255,0.15)' }}>
+          {user?.avatar ? (
+            <img src={user.avatar} alt="avatar" className="w-8 h-8 rounded-full object-cover shrink-0" style={{ border: '1.5px solid rgba(255,255,255,0.6)' }} />
+          ) : (
+            <div className="w-8 h-8 rounded-full font-bold text-xs flex items-center justify-center shrink-0" style={{ background: 'rgba(255,255,255,0.2)', color: 'white', border: '1.5px solid rgba(255,255,255,0.4)' }}>
+              {user?.username?.[0]?.toUpperCase() ?? '?'}
+            </div>
+          )}
           <div className="flex-1 flex flex-col overflow-hidden">
-            <span className="text-xs font-semibold text-text overflow-hidden text-ellipsis whitespace-nowrap">
+            <span className="text-xs font-semibold text-white overflow-hidden text-ellipsis whitespace-nowrap">
               {user?.username ?? 'Invitado'}
             </span>
-            <span className="text-[0.7rem] text-muted capitalize">{user?.role ?? '—'}</span>
+            <span className="text-[0.7rem] capitalize" style={{ color: 'rgba(255,255,255,0.6)' }}>{user?.role ?? '—'}</span>
           </div>
           <button
-            className="bg-transparent border-none cursor-pointer text-muted w-[22px] h-[22px] flex items-center justify-center shrink-0 rounded p-0 transition-all duration-150 hover:text-secondary hover:bg-secondary/10 [&>svg]:w-4 [&>svg]:h-4"
+            className="bg-transparent border-none cursor-pointer w-[22px] h-[22px] flex items-center justify-center shrink-0 rounded p-0 transition-all duration-150 [&>svg]:w-4 [&>svg]:h-4"
+            style={{ color: 'rgba(255,255,255,0.7)' }}
+            onMouseEnter={e => (e.currentTarget as HTMLElement).style.color = 'white'}
+            onMouseLeave={e => (e.currentTarget as HTMLElement).style.color = 'rgba(255,255,255,0.7)'}
             onClick={logout}
             title="Cerrar sesión"
           >
@@ -135,10 +147,10 @@ export default function MainLayout() {
 
       {/* ── Main ── */}
       <div className="flex-1 flex flex-col overflow-hidden min-w-0">
-        <header className="h-[52px] flex items-center justify-end px-6 bg-surface border-b border-border shrink-0">
+        <header className="h-[52px] flex items-center justify-end px-6 bg-white border-b border-gray-200 shrink-0">
           <div className="flex items-center gap-2">
             <button
-              className="bg-transparent border border-border rounded-lg text-muted w-8 h-8 flex items-center justify-center cursor-pointer transition-all duration-150 hover:text-primary hover:border-primary hover:bg-primary/10 [&>svg]:w-4 [&>svg]:h-4"
+              className="bg-transparent border border-gray-200 rounded-lg text-gray-400 w-8 h-8 flex items-center justify-center cursor-pointer transition-all duration-150 hover:border-[#03BAE9] hover:text-[#03BAE9] [&>svg]:w-4 [&>svg]:h-4"
               title="Notificaciones"
             >
               {icons.notificaciones}
@@ -146,7 +158,7 @@ export default function MainLayout() {
           </div>
         </header>
 
-        <main className="flex-1 overflow-y-auto overflow-x-hidden p-7 bg-bg">
+        <main className="flex-1 overflow-y-auto overflow-x-hidden p-7 bg-gray-50">
           <Outlet />
         </main>
       </div>
