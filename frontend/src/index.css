@@ -2,14 +2,22 @@
 
 @theme {
   /* ── Brand palette ─────────────────────────────────────────── */
-  --color-primary:   #3CAC3B;
-  --color-secondary: #E61D25;
-  --color-bg:        #0f1111;
-  --color-surface:   #1a1e1e;
-  --color-surface2:  #242828;
-  --color-border:    #2a2e2e;
-  --color-muted:     #D1D4D1;
-  --color-text:      #e8ebe8;
+  /* Accent rojo (subastas, sidebar, CTAs) */
+  --color-auction:   #D82D31;
+  /* Accent azul (búsqueda, alertas) */
+  --color-info:      #03BAE9;
+  /* Accent verde (propuestas, éxito) */
+  --color-success:   #05B15A;
+
+  /* Semánticos — tema claro (mismo que DashboardPage / MainLayout) */
+  --color-primary:   #D82D31;   /* rojo — acción principal */
+  --color-secondary: #D82D31;   /* alias para compatibilidad */
+  --color-bg:        #f9fafb;   /* gray-50 — fondo del main */
+  --color-surface:   #ffffff;   /* blanco — fondo de cards */
+  --color-surface2:  #f3f4f6;   /* gray-100 — fondo de chips/badges */
+  --color-border:    #e5e7eb;   /* gray-200 — bordes */
+  --color-muted:     #6b7280;   /* gray-500 — texto secundario */
+  --color-text:      #111827;   /* gray-900 — texto principal */
 
   /* ── Sidebar ───────────────────────────────────────────────── */
   --width-sidebar: 240px;
@@ -49,4 +57,15 @@ html, body, #root {
 
 .animate-pulse-dot {
   animation: pulse-dot 2s ease-in-out infinite;
+}
+
+/* ── Modal animations ───────────────────────────────────────────────────────── */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(12px) scale(0.97); }
+  to   { opacity: 1; transform: translateY(0)    scale(1); }
 }

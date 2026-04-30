@@ -1,5 +1,6 @@
 import { NavLink, Outlet } from 'react-router-dom';
 import { useAuth } from '../auth/useAuth';
+import type { JSX } from 'react';
 
 // ── Icons (inline SVG, zero deps) ────────────────────────────────────────────
 const icons: Record<string, JSX.Element> = {

@@ -1,29 +1,36 @@
-import { createContext, useContext, useState, ReactNode } from 'react';
+import { createContext, useContext, useState, type ReactNode } from 'react';
 
-interface User {
+interface AuthUser {
+  id: string;
   username: string;
-  email: string;
   role: string;
-  avatar?: string; // base64 o URL
 }
 
 interface AuthContextType {
   isAuthenticated: boolean;
-  user: User | null;
+  user: AuthUser | null;
   login: (username: string, password: string) => boolean;
   logout: () => void;
-  updateUser: (data: Partial<Pick<User, 'username' | 'email' | 'avatar'>>) => void;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<AuthUser | null>({
+    id: 'demo',
+    username: 'demo',
+    role: 'user',
+  });
 
   const login = (username: string, password: string): boolean => {
-    // Mock auth: cualquier usuario con password "1234" es válido
+    // Mock auth: cualquier usuario con password "1234" es válido.
+    // id se usará como userId en las llamadas a la API; reemplazar cuando exista /api/auth/login.
     if (password === '1234') {
-      setUser({ username, email: '', role: username === 'admin' ? 'admin' : 'user' });
+      setUser({
+        id: username,               // TODO: reemplazar con el id real del servidor
+        username,
+        role: username === 'admin' ? 'admin' : 'user',
+      });
       return true;
     }
     return false;
@@ -31,12 +38,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const logout = () => setUser(null);
 
-  const updateUser = (data: Partial<Pick<User, 'username' | 'email' | 'avatar'>>) => {
-    setUser((prev) => (prev ? { ...prev, ...data } : prev));
-  };
-
   return (
-    <AuthContext.Provider value={{ isAuthenticated: !!user, user, login, logout, updateUser }}>
+    <AuthContext.Provider value={{ isAuthenticated: !!user, user, login, logout }}>
       {children}
     </AuthContext.Provider>
   );
