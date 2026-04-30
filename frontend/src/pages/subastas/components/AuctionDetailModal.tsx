@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
-import type { Auction, Sticker } from '../../types/auction';
-import { useAuth } from '../../auth/useAuth';
+import type { Auction, Sticker } from '../../../types/auction';
+import { useAuth } from '../../../auth/useAuth';
 import CountdownBadge from './CountdownBadge';
 import BidForm from './BidForm';
 import { conditionLabel } from './ConditionsBuilder';
@@ -17,10 +17,11 @@ export default function AuctionDetailModal({
   auction, myStickers, onClose, onBid, isSubmitting = false,
 }: AuctionDetailModalProps) {
   const { user } = useAuth();
-  const isOwner  = user?.username === auction.ownerUsername;
-  const topBid   = auction.bids.at(-1);
+  const isOwner = user?.username === auction.ownerUsername;
+  const topBid = auction.bids.at(-1);
   const isActive = auction.status === 'active';
-  const canBid   = isActive && !isOwner;
+  const alreadyBid = auction.bids.some((b) => b.bidderUsername === user?.username);
+  const canBid = isActive && !isOwner && !alreadyBid;
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose(); };
@@ -50,7 +51,7 @@ export default function AuctionDetailModal({
             className="w-8 h-8 flex items-center justify-center rounded-lg text-muted hover:text-text hover:bg-surface2 transition-all"
           >
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="w-4 h-4">
-              <path d="M18 6 6 18M6 6l12 12"/>
+              <path d="M18 6 6 18M6 6l12 12" />
             </svg>
           </button>
         </div>
@@ -145,6 +146,9 @@ export default function AuctionDetailModal({
 
           {isOwner && isActive && (
             <p className="text-xs text-muted text-center py-2">Esta es tu subasta — no podés ofertar.</p>
+          )}
+          {!isOwner && isActive && alreadyBid && (
+            <p className="text-xs text-muted text-center py-2">Ya ofertaste en esta subasta — solo se permite una oferta por participante.</p>
           )}
           {!isActive && (
             <p className="text-xs text-muted text-center py-2">Esta subasta ya finalizó.</p>

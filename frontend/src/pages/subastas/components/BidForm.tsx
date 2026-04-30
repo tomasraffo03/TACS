@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import type { Sticker, AuctionCondition } from '../../types/auction';
+import type { Sticker, AuctionCondition } from '../../../types/auction';
 import { conditionLabel } from './ConditionsBuilder';
 
 interface BidFormProps {
@@ -87,8 +87,8 @@ export default function BidForm({ myStickers, conditions, onBid, isSubmitting = 
                 (checked
                   ? 'border-primary/60 bg-primary/10 text-text'
                   : isRequired
-                  ? 'border-primary/30 bg-primary/5 text-muted hover:text-text'
-                  : 'border-border bg-surface2 text-muted hover:text-text')
+                    ? 'border-primary/30 bg-primary/5 text-muted hover:text-text'
+                    : 'border-border bg-surface2 text-muted hover:text-text')
               }
             >
               <input type="checkbox" className="sr-only" checked={checked} onChange={() => toggle(sticker.id)} />
@@ -98,7 +98,7 @@ export default function BidForm({ myStickers, conditions, onBid, isSubmitting = 
               }>
                 {checked && (
                   <svg viewBox="0 0 12 12" fill="none" className="w-2.5 h-2.5">
-                    <path d="M2 6l3 3 5-5" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+                    <path d="M2 6l3 3 5-5" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
                   </svg>
                 )}
               </span>
@@ -117,8 +117,8 @@ export default function BidForm({ myStickers, conditions, onBid, isSubmitting = 
       {validationError && (
         <p className="text-xs text-secondary flex items-center gap-1.5">
           <svg viewBox="0 0 16 16" fill="none" className="w-3.5 h-3.5 shrink-0">
-            <circle cx="8" cy="8" r="7" stroke="currentColor" strokeWidth="1.5"/>
-            <path d="M8 5v3M8 11h.01" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+            <circle cx="8" cy="8" r="7" stroke="currentColor" strokeWidth="1.5" />
+            <path d="M8 5v3M8 11h.01" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
           </svg>
           {validationError}
         </p>

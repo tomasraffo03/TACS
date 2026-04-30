@@ -10,32 +10,32 @@ const RegisterPage = lazy(() => import('../pages/registro/RegisterPage'));
 
 // ── Páginas protegidas ────────────────────────────────────────────────────────
 const DashboardPage      = lazy(() => import('../pages/home/DashboardPage'));
-const BuscarPage         = lazy(() => import('../pages/BuscarPage'));
-const IntercambiosPage   = lazy(() => import('../pages/IntercambiosPage'));
-const NotificacionesPage = lazy(() => import('../pages/NotificacionesPage'));
+const BuscarPage         = lazy(() => import('../pages/buscar/BuscarPage'));
+const IntercambiosPage   = lazy(() => import('../pages/intercambios/IntercambiosPage'));
+const NotificacionesPage = lazy(() => import('../pages/notificaciones/NotificacionesPage'));
 const PerfilPage         = lazy(() => import('../pages/perfil/PerfilPage'));
 const HistorialPage      = lazy(() => import('../pages/perfil/HistorialPage'));
 
 // Colección
-const ColeccionPage      = lazy(() => import('../pages/ColeccionPage'));
+const ColeccionPage      = lazy(() => import('../pages/coleccion/ColeccionPage'));
 const RepetidasPage      = lazy(() => import('../pages/coleccion/RepetidasPage'));
 const FaltantesPage      = lazy(() => import('../pages/coleccion/FaltantesPage'));
 
 // Propuestas
-const PropuestasPage     = lazy(() => import('../pages/PropuestasPage'));
+const PropuestasPage     = lazy(() => import('../pages/propuestas/PropuestasPage'));
 const PropNuevaPage      = lazy(() => import('../pages/propuestas/NuevaPage'));
 const PropRecibidasPage  = lazy(() => import('../pages/propuestas/RecibidasPage'));
 const PropEnviadasPage   = lazy(() => import('../pages/propuestas/EnviadasPage'));
 
 // Subastas
-const SubastasPage       = lazy(() => import('../pages/SubastasPage'));
+const SubastasPage       = lazy(() => import('../pages/subastas/SubastasPage'));
 const SubNuevaPage       = lazy(() => import('../pages/subastas/NuevaPage'));
 const SubActivasPage     = lazy(() => import('../pages/subastas/ActivasPage'));
 const SubMiasPage        = lazy(() => import('../pages/subastas/MiasPage'));
 const SubParticipandoPage = lazy(() => import('../pages/subastas/ParticipandoPage'));
 
 // Admin (solo rol "admin")
-const AdminPage          = lazy(() => import('../pages/AdminPage'));
+const AdminPage          = lazy(() => import('../pages/admin/AdminPage'));
 
 // ── Router ────────────────────────────────────────────────────────────────────
 const router = createBrowserRouter([

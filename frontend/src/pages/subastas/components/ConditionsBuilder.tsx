@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import type { AuctionCondition } from '../../types/auction';
+import type { AuctionCondition } from '../../../types/auction';
 
 // ── Países disponibles ────────────────────────────────────────────────────────
 export const WC_COUNTRIES = [

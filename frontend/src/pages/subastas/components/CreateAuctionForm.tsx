@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import type { Sticker, AuctionCondition } from '../../types/auction';
+import type { Sticker, AuctionCondition } from '../../../types/auction';
 import ConditionsBuilder from './ConditionsBuilder';
 
 const DURATION_OPTIONS = [
