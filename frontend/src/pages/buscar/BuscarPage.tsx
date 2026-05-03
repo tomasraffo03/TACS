@@ -1,50 +1,53 @@
 import { useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
 
 export default function BuscarPage() {
 
-  
-const figuritas = [
-  {
-    id: "fig-1",
-    figuritaBase: {
-      seleccion: { id: "sel-1", nombre: "Argentina", grupo: "A" },
-      equipo: { id: "eq-1", nombre: "River Plate" },
-      categoria: { id: "cat-1", nombre: "Oro" },
-      jugador: { id: "jug-1", nombre: "Messi" },
-    },
-  },
-  {
-    id: "fig-2",
-    figuritaBase: {
-      seleccion: { id: "sel-2", nombre: "Brazil", grupo: "G" },
-      equipo: { id: "eq-2", nombre: "Flamengo" },
-      categoria: { id: "cat-1", nombre: "Oro" },
-      jugador: { id: "jug-2", nombre: "Neymar" },
-    },
-  },
-  {
-    id: "fig-3",
-    figuritaBase: {
-      seleccion: { id: "sel-3", nombre: "France", grupo: "D" },
-      equipo: { id: "eq-3", nombre: "PSG" },
-      categoria: { id: "cat-2", nombre: "Plata" },
-      jugador: { id: "jug-3", nombre: "Mbappé" },
-    },
-  },
-  
-];
+    const navigate = useNavigate();
+    const [figuritas, setFiguritas] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [searchTerm, setSearchTerm] = useState('');
+    const [filterNumero, setFilterNumero] = useState('');
+    const [filterSeleccion, setFilterSeleccion] = useState('');
+    const [filterEquipo, setFilterEquipo] = useState('');
+    const [filterCategoria, setFilterCategoria] = useState('');
 
 
-  const navigate = useNavigate();
+    //Buscar booting
+    useEffect( () => {
+      fetch('http://localhost:8080/api/figuritas')
+      .then(res => res.json())
+      .then(data => {
+        setFiguritas(data);
+        setLoading(false);
+      })
+      .catch(error => {
+        console.error('Error fetching figuritas:', error);
+        setLoading(false);
+      });
+    }, []); // figuritas list loaded. Need to test this.
+  
+    if (loading) {
+      return (
+        <div className="page-enter">
+          <p className="text-text">Cargando figuritas...</p>
+          </div>
+      );
+    }
+
+
 
   return (
     <div className="page-enter">
-      <h1 className="text-3xl font-bold text-text mb-6">Trabajando</h1>
+      <h1 className="text-3xl font-bold text-text mb-6">Buscar</h1>
 
+      {/* The search bar */}
       <div className="mb-6">
         <input
           type="text"
           placeholder="Buscar figurita..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
           className="w-full p-3 bg-surface border border-border rounded-lg text-text placeholder-muted focus:outline-none focus:border-primary"
         />
       </div>
@@ -54,27 +57,63 @@ const figuritas = [
         <input
           type="text"
           placeholder="Número"
+          value={filterNumero}
+          onChange={(e) => setFilterNumero(e.target.value)}
           className="p-3 bg-surface border border-border rounded-lg text-text placeholder-muted focus:outline-none focus:border-primary"
         />
         <input
           type="text"
           placeholder="Selección"
+          value={filterSeleccion}
+          onChange={(e) => setFilterSeleccion(e.target.value)}
           className="p-3 bg-surface border border-border rounded-lg text-text placeholder-muted focus:outline-none focus:border-primary"
         />
         <input
           type="text"
-          placeholder="Jugador"
+          placeholder="Equipo"
+          value={filterEquipo}
+          onChange={(e) => setFilterEquipo(e.target.value)}
           className="p-3 bg-surface border border-border rounded-lg text-text placeholder-muted focus:outline-none focus:border-primary"
         />
-        <button className="p-3 bg-primary text-text font-bold rounded-lg hover:opacity-90 transition-opacity">
-          Buscar
-        </button>
+        <input
+          type="text"
+          placeholder="Categoria"
+          value={filterCategoria}
+          onChange={(e) => setFilterCategoria(e.target.value)}
+          className="p-3 bg-surface border border-border rounded-lg text-text placeholder-muted focus:outline-none focus:border-primary"
+        />
+        
       </div>
 
 
       <div className="grid grid-cols-3 gap-4">
-        {figuritas.map((figurita) => (
-          <div key={figurita.id} className="bg-surface p-4 rounded-lg border border-border">
+
+        {/*What will be shown in the result page.*/}
+        {figuritas.filter(figurita => {
+          const matchesSearch = figurita.figuritaBase.jugador.nombre
+            .toLowerCase()
+            .includes(searchTerm.toLowerCase());
+    
+          const matchesNumero = filterNumero === '' || 
+            figurita.figuritaBase.id.includes(filterNumero);
+    
+          const matchesSeleccion = filterSeleccion === '' || 
+            figurita.figuritaBase.seleccion.nombre.toLowerCase()
+            .includes(filterSeleccion.toLowerCase());
+    
+          const matchesEquipo = filterEquipo === '' || 
+            figurita.figuritaBase.equipo.nombre.toLowerCase()
+            .includes(filterEquipo.toLowerCase());
+    
+          const matchesCategoria = filterCategoria === '' || 
+            figurita.figuritaBase.categoria.nombre.toLowerCase()
+            .includes(filterCategoria.toLowerCase());
+    
+            return matchesSearch && matchesNumero && matchesSeleccion && 
+              matchesEquipo && matchesCategoria;
+          })
+          .map((figurita) => (
+            <div key={figurita.id} className="bg-surface p-4 rounded-lg border border-border">
             <p className= "text-sm font-bold text-text mb-2">{figurita.id}</p>
             <p className="text-sm text-muted mb-2">{figurita.figuritaBase.seleccion.nombre}</p>
             <p className="text-xl font-bold text-primary mb-2">{figurita.figuritaBase.jugador.nombre}</p>
@@ -86,11 +125,11 @@ const figuritas = [
             className="w-full p-2 bg-primary text-text font-bold rounded-lg hover:opacity-90 transition-opacity">
               Hacer Propuesta
             </button>
-          </div>
-          
-        ))}
-      </div>
 
+          </div>
+
+          ))}
+      </div>
     </div>
   );
 }
