@@ -1,7 +1,7 @@
 import { createContext, useContext, useState } from 'react';
 import type { ReactNode } from 'react';
 
-interface AuthUser {
+export interface User {
   id: string;
   username: string;
   role: string;
@@ -14,39 +14,47 @@ interface AuthContextType {
   user: User | null;
   loginWithToken: (token: string) => void;
   logout: () => void;
-  updateUser: (patch: Partial<AuthUser>) => void;
+  updateUser: (data: Partial<Pick<User, 'username' | 'email' | 'avatar'>>) => void;
+}
+
+function decodeToken(token: string): { sub: string; roles: string[] } {
+  const payload = token.split('.')[1];
+  return JSON.parse(atob(payload.replace(/-/g, '+').replace(/_/g, '/')));
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<AuthUser | null>({
-    id: 'demo',
-    username: 'demo',
-    role: 'user',
+  const [user, setUser] = useState<User | null>(() => {
+    const token = localStorage.getItem('token');
+    if (!token) return null;
+    try {
+      const { sub, roles } = decodeToken(token);
+      const role = roles.some((r: string) => r.includes('ADMIN')) ? 'admin' : 'user';
+      return { id: sub, username: sub, email: '', role };
+    } catch {
+      return null;
+    }
   });
 
-  const login = (username: string, password: string): boolean => {
-    // Mock auth: cualquier usuario con password "1234" es válido.
-    // id se usará como userId en las llamadas a la API; reemplazar cuando exista /api/auth/login.
-    if (password === '1234') {
-      setUser({
-        id: username,               // TODO: reemplazar con el id real del servidor
-        username,
-        role: username === 'admin' ? 'admin' : 'user',
-      });
-      return true;
-    }
-    return false;
+  const loginWithToken = (token: string) => {
+    localStorage.setItem('token', token);
+    const { sub, roles } = decodeToken(token);
+    const role = roles.some((r: string) => r.includes('ADMIN')) ? 'admin' : 'user';
+    setUser({ id: sub, username: sub, email: '', role });
   };
 
-  const logout = () => setUser(null);
+  const logout = () => {
+    localStorage.removeItem('token');
+    setUser(null);
+  };
 
-  const updateUser = (patch: Partial<AuthUser>) =>
-    setUser((prev) => (prev ? { ...prev, ...patch } : prev));
+  const updateUser = (data: Partial<Pick<User, 'username' | 'email' | 'avatar'>>) => {
+    setUser(prev => (prev ? { ...prev, ...data } : prev));
+  };
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated: !!user, user, login, logout, updateUser }}>
+    <AuthContext.Provider value={{ isAuthenticated: !!user, user, loginWithToken, logout, updateUser }}>
       {children}
     </AuthContext.Provider>
   );

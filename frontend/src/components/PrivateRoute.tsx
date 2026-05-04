@@ -1,4 +1,4 @@
-import { Navigate, Outlet } from 'react-router-dom';
+import { Navigate, Outlet, useLocation } from 'react-router-dom';
 import { useAuth } from '../auth/useAuth';
 
 interface PrivateRouteProps {
@@ -6,8 +6,8 @@ interface PrivateRouteProps {
 }
 
 export default function PrivateRoute({ requiredRole }: PrivateRouteProps) {
-  const { user } = useAuth();
-  // const location = useLocation();
+  const { user, isAuthenticated } = useAuth();
+  const location = useLocation();
 
   if (!isAuthenticated) {
     return <Navigate to="/login" state={{ from: location }} replace />;
