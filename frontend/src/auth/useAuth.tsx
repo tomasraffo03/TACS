@@ -4,6 +4,8 @@ interface AuthUser {
   id: string;
   username: string;
   role: string;
+  email?: string;
+  avatar?: string;
 }
 
 interface AuthContextType {
@@ -11,6 +13,7 @@ interface AuthContextType {
   user: AuthUser | null;
   login: (username: string, password: string) => boolean;
   logout: () => void;
+  updateUser: (patch: Partial<AuthUser>) => void;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -38,8 +41,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const logout = () => setUser(null);
 
+  const updateUser = (patch: Partial<AuthUser>) =>
+    setUser((prev) => (prev ? { ...prev, ...patch } : prev));
+
   return (
-    <AuthContext.Provider value={{ isAuthenticated: !!user, user, login, logout }}>
+    <AuthContext.Provider value={{ isAuthenticated: !!user, user, login, logout, updateUser }}>
       {children}
     </AuthContext.Provider>
   );
