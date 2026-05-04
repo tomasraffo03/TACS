@@ -6,7 +6,7 @@ interface PrivateRouteProps {
 }
 
 export default function PrivateRoute({ requiredRole }: PrivateRouteProps) {
-  const { user, isAuthenticated } = useAuth();
+  const { isAuthenticated, user } = useAuth();
   const location = useLocation();
 
   if (!isAuthenticated) {
