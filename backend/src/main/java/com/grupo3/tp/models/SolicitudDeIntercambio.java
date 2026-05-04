@@ -16,6 +16,7 @@ public class SolicitudDeIntercambio {
     private Usuario usuario;
     private Figurita figurita;
     private Integer cantidadDisponible;
-
+    private List<Figurita> figuritasOfrecidas; //added this for intercambio directo work. MYH
+    private String estado;
     //private List<Oferta> ofertas;
 }

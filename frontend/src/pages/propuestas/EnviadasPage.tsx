@@ -1,76 +1,25 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useAuth } from '../../auth/useAuth';
 
 export default function PropuestasEnviadasPage() {
-  // Mock data - Proposals YOU sent to others
-  const [propuestasEnviadas] = useState([
-    {
-      id: "prop-1",
-      figuritaDeseada: {
-        id: "fig-1",
-        figuritaBase: {
-          seleccion: { id: "sel-1", nombre: "Argentina", grupo: "A" },
-          equipo: { id: "eq-1", nombre: "River Plate" },
-          categoria: { id: "cat-1", nombre: "Oro" },
-          jugador: { id: "jug-1", nombre: "Messi" },
-        },
-      },
-      figuritasOfrecidas: [
-        {
-          id: "mia-1",
-          figuritaBase: {
-            seleccion: { id: "sel-3", nombre: "France", grupo: "D" },
-            equipo: { id: "eq-3", nombre: "PSG" },
-            categoria: { id: "cat-2", nombre: "Plata" },
-            jugador: { id: "jug-3", nombre: "Mbappé" },
-          },
-        },
-      ],
-      usuarioDestino: {
-        id: "user-2",
-        username: "JuanPerez",
-      },
-      estado: "pendiente",
-      fechaEnvio: "2025-04-27",
-    },
-    {
-      id: "prop-2",
-      figuritaDeseada: {
-        id: "fig-2",
-        figuritaBase: {
-          seleccion: { id: "sel-2", nombre: "Brazil", grupo: "G" },
-          equipo: { id: "eq-2", nombre: "Flamengo" },
-          categoria: { id: "cat-1", nombre: "Oro" },
-          jugador: { id: "jug-2", nombre: "Neymar" },
-        },
-      },
-      figuritasOfrecidas: [
-        {
-          id: "mia-2",
-          figuritaBase: {
-            seleccion: { id: "sel-4", nombre: "Germany", grupo: "E" },
-            equipo: { id: "eq-4", nombre: "Bayern" },
-            categoria: { id: "cat-2", nombre: "Plata" },
-            jugador: { id: "jug-4", nombre: "Müller" },
-          },
-        },
-        {
-          id: "mia-3",
-          figuritaBase: {
-            seleccion: { id: "sel-5", nombre: "Spain", grupo: "E" },
-            equipo: { id: "eq-5", nombre: "Barcelona" },
-            categoria: { id: "cat-2", nombre: "Plata" },
-            jugador: { id: "jug-5", nombre: "Pedri" },
-          },
-        },
-      ],
-      usuarioDestino: {
-        id: "user-3",
-        username: "MariaGomez",
-      },
-      estado: "aceptado",
-      fechaEnvio: "2025-04-25",
-    },
-  ]);
+  const { user } = useAuth();
+  const [propuestasEnviadas, setPropuestasEnviadas] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (!user?.id) return;
+
+    fetch(`http://localhost:8080/api/solicitudes-intercambio/enviadas/${user.id}`)
+      .then(res => res.json())
+      .then(data => {
+        setPropuestasEnviadas(data);
+        setLoading(false);
+      })
+      .catch(error => {
+        console.error('Error fetching propuestas enviadas:', error);
+        setLoading(false);
+      });
+  }, [user?.id]);
 
   const getStatusColor = (estado: string) => {
     switch (estado) {
@@ -98,6 +47,14 @@ export default function PropuestasEnviadasPage() {
     }
   };
 
+  if (loading) {
+    return (
+      <div className="page-enter">
+        <p className="text-text">Cargando propuestas...</p>
+      </div>
+    );
+  }
+
   return (
     <div className="page-enter">
       <h2 className="text-xl font-semibold text-text mb-6">Propuestas · Enviadas</h2>
@@ -112,7 +69,7 @@ export default function PropuestasEnviadasPage() {
               <div className="flex items-center justify-between mb-4">
                 <div>
                   <p className="text-sm text-muted">Enviado a:</p>
-                  <p className="text-text font-semibold">{propuesta.usuarioDestino.username}</p>
+                  <p className="text-text font-semibold">{propuesta.usuario?.username || 'Usuario desconocido'}</p>
                 </div>
                 <p className={`font-semibold ${getStatusColor(propuesta.estado)}`}>
                   {getStatusText(propuesta.estado)}
@@ -123,7 +80,7 @@ export default function PropuestasEnviadasPage() {
               <div className="mb-4 pb-4 border-b border-border">
                 <p className="text-sm text-muted mb-2">Figurita que querías:</p>
                 <p className="text-text font-semibold">
-                  {propuesta.figuritaDeseada.figuritaBase.jugador.nombre} - {propuesta.figuritaDeseada.figuritaBase.seleccion.nombre}
+                  {propuesta.figurita?.figuritaBase?.jugador?.nombre || 'N/A'} - {propuesta.figurita?.figuritaBase?.seleccion?.nombre || 'N/A'}
                 </p>
               </div>
 
@@ -131,16 +88,17 @@ export default function PropuestasEnviadasPage() {
               <div className="mb-4">
                 <p className="text-sm text-muted mb-2">Figuritas que ofreciste:</p>
                 <div className="space-y-1">
-                  {propuesta.figuritasOfrecidas.map(fig => (
-                    <p key={fig.id} className="text-text text-sm">
-                      • {fig.figuritaBase.jugador.nombre} - {fig.figuritaBase.seleccion.nombre}
-                    </p>
-                  ))}
+                  {propuesta.figuritasOfrecidas && propuesta.figuritasOfrecidas.length > 0 ? (
+                    propuesta.figuritasOfrecidas.map(fig => (
+                      <p key={fig.id} className="text-text text-sm">
+                        • {fig.figuritaBase?.jugador?.nombre || 'N/A'} - {fig.figuritaBase?.seleccion?.nombre || 'N/A'}
+                      </p>
+                    ))
+                  ) : (
+                    <p className="text-text text-sm">Sin figuritas ofrecidas</p>
+                  )}
                 </div>
               </div>
-
-              {/* Date */}
-              <p className="text-xs text-muted">{propuesta.fechaEnvio}</p>
             </div>
           ))}
         </div>

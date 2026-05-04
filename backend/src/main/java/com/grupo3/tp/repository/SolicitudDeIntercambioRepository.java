@@ -38,4 +38,17 @@ public class SolicitudDeIntercambioRepository {
     public boolean existsById(String id) {
         return store.containsKey(id);
     }
+
+
+    public List<SolicitudDeIntercambio> findByUsuarioId(String usuarioId) {
+        return store.values().stream()
+                .filter(solicitud -> solicitud.getUsuario().getId().equals(usuarioId))
+                .collect(java.util.stream.Collectors.toList());
+    }
+
+    public List<SolicitudDeIntercambio> findByFiguritaOwnerId(String usuarioId) {
+        return store.values().stream()
+                .filter(solicitud -> solicitud.getFigurita().getOwner().getId().equals(usuarioId))
+                .collect(java.util.stream.Collectors.toList());
+    }
 }

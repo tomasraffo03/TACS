@@ -1,89 +1,60 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useAuth } from '../../auth/useAuth';
 
 export default function PropuestasRecibidasPage() {
-  // Mock data - Proposals OTHERS sent to you
-  const [propuestasRecibidas] = useState([
-    {
-      id: "prop-recv-1",
-      figuritaDeseada: {
-        id: "mia-1",
-        figuritaBase: {
-          seleccion: { id: "sel-3", nombre: "France", grupo: "D" },
-          equipo: { id: "eq-3", nombre: "PSG" },
-          categoria: { id: "cat-2", nombre: "Plata" },
-          jugador: { id: "jug-3", nombre: "Mbappé" },
-        },
-      },
-      figuritasOfrecidas: [
-        {
-          id: "fig-1",
-          figuritaBase: {
-            seleccion: { id: "sel-1", nombre: "Argentina", grupo: "A" },
-            equipo: { id: "eq-1", nombre: "River Plate" },
-            categoria: { id: "cat-1", nombre: "Oro" },
-            jugador: { id: "jug-1", nombre: "Messi" },
-          },
-        },
-      ],
-      usuarioOrigen: {
-        id: "user-2",
-        username: "JuanPerez",
-      },
-      estado: "pendiente",
-      fechaRecepcion: "2025-04-26",
-    },
-    {
-      id: "prop-recv-2",
-      figuritaDeseada: {
-        id: "mia-2",
-        figuritaBase: {
-          seleccion: { id: "sel-4", nombre: "Germany", grupo: "E" },
-          equipo: { id: "eq-4", nombre: "Bayern" },
-          categoria: { id: "cat-2", nombre: "Plata" },
-          jugador: { id: "jug-4", nombre: "Müller" },
-        },
-      },
-      figuritasOfrecidas: [
-        {
-          id: "fig-2",
-          figuritaBase: {
-            seleccion: { id: "sel-2", nombre: "Brazil", grupo: "G" },
-            equipo: { id: "eq-2", nombre: "Flamengo" },
-            categoria: { id: "cat-1", nombre: "Oro" },
-            jugador: { id: "jug-2", nombre: "Neymar" },
-          },
-        },
-        {
-          id: "fig-3",
-          figuritaBase: {
-            seleccion: { id: "sel-5", nombre: "Spain", grupo: "E" },
-            equipo: { id: "eq-5", nombre: "Barcelona" },
-            categoria: { id: "cat-2", nombre: "Plata" },
-            jugador: { id: "jug-5", nombre: "Pedri" },
-          },
-        },
-      ],
-      usuarioOrigen: {
-        id: "user-3",
-        username: "MariaGomez",
-      },
-      estado: "pendiente",
-      fechaRecepcion: "2025-04-24",
-    },
-  ]);
+  const { user } = useAuth();
+  const [propuestasRecibidas, setPropuestasRecibidas] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [localState, setLocalState] = useState<{ [key: string]: string }>({});
 
-  const [localState, setLocalState] = useState<{ [key: string]: string }>(
-    propuestasRecibidas.reduce((acc, prop) => ({ ...acc, [prop.id]: prop.estado }), {})
-  );
+  useEffect(() => {
+    if (!user?.id) return;
+
+    fetch(`http://localhost:8080/api/solicitudes-intercambio/recibidas/${user.id}`)
+      .then(res => res.json())
+      .then(data => {
+        setPropuestasRecibidas(data);
+        const initialState = data.reduce((acc: any, prop: any) => ({ 
+          ...acc, 
+          [prop.id]: prop.estado 
+        }), {});
+        setLocalState(initialState);
+        setLoading(false);
+      })
+      .catch(error => {
+        console.error('Error fetching propuestas recibidas:', error);
+        setLoading(false);
+      });
+  }, [user?.id]);
 
   const handleAceptar = (propuestaId: string) => {
-    setLocalState(prev => ({ ...prev, [propuestaId]: "aceptado" }));
-    console.log(`Propuesta ${propuestaId} aceptada`);
+    fetch(`http://localhost:8080/api/solicitudes-intercambio/${propuestaId}/aceptar`, {
+      method: 'PUT'
+    })
+    .then(res => res.json())
+    .then(data => {
+      setLocalState(prev => ({ ...prev, [propuestaId]: "aceptado" }));
+      console.log(`Propuesta ${propuestaId} aceptada`);
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      alert("Error al aceptar propuesta");
+    });
   };
 
   const handleRechazar = (propuestaId: string) => {
-    setLocalState(prev => ({ ...prev, [propuestaId]: "rechazado" }));
-    console.log(`Propuesta ${propuestaId} rechazada`);
+    fetch(`http://localhost:8080/api/solicitudes-intercambio/${propuestaId}/rechazar`, {
+      method: 'PUT'
+    })
+    .then(res => res.json())
+    .then(data => {
+      setLocalState(prev => ({ ...prev, [propuestaId]: "rechazado" }));
+      console.log(`Propuesta ${propuestaId} rechazada`);
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      alert("Error al rechazar propuesta");
+    });
   };
 
   const getStatusColor = (estado: string) => {
@@ -112,6 +83,14 @@ export default function PropuestasRecibidasPage() {
     }
   };
 
+  if (loading) {
+    return (
+      <div className="page-enter">
+        <p className="text-text">Cargando propuestas...</p>
+      </div>
+    );
+  }
+
   return (
     <div className="page-enter">
       <h2 className="text-xl font-semibold text-text mb-6">Propuestas · Recibidas</h2>
@@ -126,7 +105,7 @@ export default function PropuestasRecibidasPage() {
               <div className="flex items-center justify-between mb-4">
                 <div>
                   <p className="text-sm text-muted">De:</p>
-                  <p className="text-text font-semibold">{propuesta.usuarioOrigen.username}</p>
+                  <p className="text-text font-semibold">{propuesta.usuario?.username || 'Usuario desconocido'}</p>
                 </div>
                 <p className={`font-semibold ${getStatusColor(localState[propuesta.id])}`}>
                   {getStatusText(localState[propuesta.id])}
@@ -137,7 +116,7 @@ export default function PropuestasRecibidasPage() {
               <div className="mb-4 pb-4 border-b border-border">
                 <p className="text-sm text-muted mb-2">Quiere tu figurita:</p>
                 <p className="text-text font-semibold">
-                  {propuesta.figuritaDeseada.figuritaBase.jugador.nombre} - {propuesta.figuritaDeseada.figuritaBase.seleccion.nombre}
+                  {propuesta.figurita?.figuritaBase?.jugador?.nombre || 'N/A'} - {propuesta.figurita?.figuritaBase?.seleccion?.nombre || 'N/A'}
                 </p>
               </div>
 
@@ -145,11 +124,15 @@ export default function PropuestasRecibidasPage() {
               <div className="mb-4 pb-4 border-b border-border">
                 <p className="text-sm text-muted mb-2">Te ofrece:</p>
                 <div className="space-y-1">
-                  {propuesta.figuritasOfrecidas.map(fig => (
-                    <p key={fig.id} className="text-text text-sm">
-                      • {fig.figuritaBase.jugador.nombre} - {fig.figuritaBase.seleccion.nombre}
-                    </p>
-                  ))}
+                  {propuesta.figuritasOfrecidas && propuesta.figuritasOfrecidas.length > 0 ? (
+                    propuesta.figuritasOfrecidas.map(fig => (
+                      <p key={fig.id} className="text-text text-sm">
+                        • {fig.figuritaBase?.jugador?.nombre || 'N/A'} - {fig.figuritaBase?.seleccion?.nombre || 'N/A'}
+                      </p>
+                    ))
+                  ) : (
+                    <p className="text-text text-sm">Sin figuritas ofrecidas</p>
+                  )}
                 </div>
               </div>
 
@@ -170,9 +153,6 @@ export default function PropuestasRecibidasPage() {
                   </button>
                 </div>
               )}
-
-              {/* Date */}
-              <p className="text-xs text-muted mt-2">{propuesta.fechaRecepcion}</p>
             </div>
           ))}
         </div>

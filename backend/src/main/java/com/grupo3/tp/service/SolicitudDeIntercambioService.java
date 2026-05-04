@@ -43,4 +43,33 @@ public class SolicitudDeIntercambioService {
         repository.deleteById(id);
         return true;
     }
+
+    public List<SolicitudDeIntercambio> obtenerRecibidas(String usuarioId) {
+        return repository.findByFiguritaOwnerId(usuarioId);
+    }
+
+    public List<SolicitudDeIntercambio> obtenerEnviadas(String usuarioId) {
+        return repository.findByUsuarioId(usuarioId);
+    }
+
+    public Optional<SolicitudDeIntercambio> aceptar(String id) {
+        Optional<SolicitudDeIntercambio> solicitud = repository.findById(id);
+        if (solicitud.isPresent()) {
+            solicitud.get().setEstado("aceptado");
+            repository.save(solicitud.get());
+            // TODO: Create Intercambio here later
+            // TODO: Create notification here later
+        }
+        return solicitud;
+    }
+
+    public Optional<SolicitudDeIntercambio> rechazar(String id) {
+        Optional<SolicitudDeIntercambio> solicitud = repository.findById(id);
+        if (solicitud.isPresent()) {
+            solicitud.get().setEstado("rechazado");
+            repository.save(solicitud.get());
+            // TODO: Create notification here later
+        }
+        return solicitud;
+    }
 }

@@ -31,23 +31,28 @@ export default function PropuestasNuevaPage() {
       return;
     }
 
-    const newProposal = {
-      id: `prop-${Date.now()}`,
-      usuarioOrigen: user?.id,
-      usuarioDestino: figuritaDelLink?.owner?.id,
-      figuritaDeseada: figuritaSeleccionada,
-      figuritasOfrecidas: figuritasOfrecidas,
-      estado: "pendiente",
-      fecha: new Date().toISOString(),
+    const newSolicitud = {
+      usuario: { id: user?.id },
+      figurita: { id: figuritaSeleccionada },
+      figuritasOfrecidas: figuritasOfrecidas.map(id => ({ id })),
+      estado: "pendiente"
     };
 
-    const existingProposals = JSON.parse(localStorage.getItem('propuestas_enviadas') || '[]');
-    existingProposals.push(newProposal);
-    localStorage.setItem('propuestas_enviadas', JSON.stringify(existingProposals));
-
-    console.log("Propuesta enviada:", newProposal);
-    alert("¡Propuesta enviada!");
-    navigate('/propuestas/enviadas');
+    fetch('http://localhost:8080/api/solicitudes-intercambio', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(newSolicitud)
+    })
+    .then(res => res.json())
+    .then(data => {
+      console.log("Propuesta enviada:", data);
+      alert("¡Propuesta enviada!");
+      navigate('/propuestas/enviadas');
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      alert("Error al enviar propuesta");
+    });
   };
 
   useEffect(() => {

@@ -49,4 +49,31 @@ public class SolicitudDeIntercambioController {
         }
         return ResponseEntity.notFound().build();
     }
+
+    @GetMapping("/recibidas/{usuarioId}")
+    public ResponseEntity<List<SolicitudDeIntercambio>> getRecibidas(@PathVariable String usuarioId) {
+        return ResponseEntity.ok(service.obtenerRecibidas(usuarioId));
+    }
+
+    @GetMapping("/enviadas/{usuarioId}")
+    public ResponseEntity<List<SolicitudDeIntercambio>> getEnviadas(@PathVariable String usuarioId) {
+        return ResponseEntity.ok(service.obtenerEnviadas(usuarioId));
+
+
+    }
+
+    @PutMapping("/{id}/aceptar")
+    public ResponseEntity<SolicitudDeIntercambio> aceptar(@PathVariable String id) {
+        return service.aceptar(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    @PutMapping("/{id}/rechazar")
+    public ResponseEntity<SolicitudDeIntercambio> rechazar(@PathVariable String id) {
+        return service.rechazar(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
 }
