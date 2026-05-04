@@ -3,6 +3,7 @@ import { createBrowserRouter, Navigate } from 'react-router-dom';
 
 import MainLayout from '../layouts/MainLayout';
 import PrivateRoute from '../components/PrivateRoute';
+import PublicRoute from '../components/PublicRoute';
 
 // ── Páginas públicas ──────────────────────────────────────────────────────────
 const LoginPage    = lazy(() => import('../pages/login/LoginPage'));
@@ -39,9 +40,14 @@ const AdminPage          = lazy(() => import('../pages/admin/AdminPage'));
 
 // ── Router ────────────────────────────────────────────────────────────────────
 const router = createBrowserRouter([
-  // Rutas públicas
-  { path: '/login',    element: <LoginPage /> },
-  { path: '/register', element: <RegisterPage /> },
+  // Rutas públicas — redirigen al dashboard si ya está autenticado
+  {
+    element: <PublicRoute />,
+    children: [
+      { path: '/login',    element: <LoginPage /> },
+      { path: '/register', element: <RegisterPage /> },
+    ],
+  },
 
   // Rutas protegidas — cualquier usuario autenticado
   {

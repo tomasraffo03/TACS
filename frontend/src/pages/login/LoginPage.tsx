@@ -1,12 +1,13 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../../auth/useAuth';
+import { authService } from '../../services/auth/auth.service';
 import bgImage from '../../assets/mundial-2026-cartel-fifa.jpg';
 
 type Mode = 'login' | 'forgot';
 
 export default function LoginPage() {
-  const { login } = useAuth();
+  const { loginWithToken } = useAuth();
   const navigate = useNavigate();
 
   const [mode, setMode] = useState<Mode>('login');
@@ -14,21 +15,25 @@ export default function LoginPage() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [info, setInfo] = useState('');
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (e: React.SyntheticEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError('');
     setInfo('');
 
     if (mode === 'login') {
-      const ok = login(username, password);
-      if (ok) {
+      setLoading(true);
+      try {
+        const token = await authService.login({ username, password });
+        loginWithToken(token);
         navigate('/dashboard', { replace: true });
-      } else {
+      } catch {
         setError('Usuario o contraseña incorrectos.');
+      } finally {
+        setLoading(false);
       }
     } else {
-      // TODO: conectar con backend
       setInfo('Si el usuario existe, recibirás instrucciones para restablecer tu contraseña.');
       setMode('login');
     }
@@ -121,7 +126,8 @@ export default function LoginPage() {
             {/* Botón principal */}
             <button
               type="submit"
-              className="w-full py-2.5 rounded-lg text-sm font-bold text-white transition-all duration-150 hover:opacity-90 active:scale-95 mt-1"
+              disabled={loading}
+              className="w-full py-2.5 rounded-lg text-sm font-bold text-white transition-all duration-150 hover:opacity-90 active:scale-95 mt-1 disabled:opacity-60 disabled:cursor-not-allowed"
               style={{
                 background:
                   mode === 'forgot'
@@ -129,7 +135,7 @@ export default function LoginPage() {
                     : 'linear-gradient(90deg, #D82D31, #03BAE9)',
               }}
             >
-              {mode === 'login' ? 'Ingresar' : 'Enviar instrucciones'}
+              {loading ? 'Ingresando...' : mode === 'login' ? 'Ingresar' : 'Enviar instrucciones'}
             </button>
           </form>
 

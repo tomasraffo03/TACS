@@ -38,4 +38,10 @@ public class UsuarioRepository {
     public boolean existsById(String id) {
         return store.containsKey(id);
     }
+
+    public Optional<Usuario> findByUsername(String username) {
+        return store.values().stream()
+                .filter(u -> username.equals(u.getUsername()))
+                .findFirst();
+    }
 }

@@ -1,4 +1,5 @@
-import { createContext, useContext, useState, type ReactNode } from 'react';
+import { createContext, useContext, useState } from 'react';
+import type { ReactNode } from 'react';
 
 interface AuthUser {
   id: string;
@@ -10,8 +11,8 @@ interface AuthUser {
 
 interface AuthContextType {
   isAuthenticated: boolean;
-  user: AuthUser | null;
-  login: (username: string, password: string) => boolean;
+  user: User | null;
+  loginWithToken: (token: string) => void;
   logout: () => void;
   updateUser: (patch: Partial<AuthUser>) => void;
 }
