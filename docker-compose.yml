@@ -1,0 +1,35 @@
+services:
+  # ─────────────────────────────────────────────
+  # BACKEND — Spring Boot corriendo en JVM
+  # ─────────────────────────────────────────────
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: tacs-backend
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    networks:
+      - tacs-net
+    restart: unless-stopped
+
+  # ─────────────────────────────────────────────
+  # FRONTEND — React (Vite build) servido por Nginx
+  # ─────────────────────────────────────────────
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: tacs-frontend
+    ports:
+      - "80:80"
+    networks:
+      - tacs-net
+    restart: unless-stopped
+
+# Red interna bridge: los contenedores se comunican por nombre de servicio
+networks:
+  tacs-net:
+    driver: bridge
