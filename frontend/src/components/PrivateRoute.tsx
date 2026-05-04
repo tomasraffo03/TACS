@@ -9,10 +9,9 @@ export default function PrivateRoute({ requiredRole }: PrivateRouteProps) {
   const { user } = useAuth();
   // const location = useLocation();
 
-  //bypass
-  // if (!isAuthenticated) {
-  //   return <Navigate to="/login" state={{ from: location }} replace />;
-  // }
+  if (!isAuthenticated) {
+    return <Navigate to="/login" state={{ from: location }} replace />;
+  }
 
   if (requiredRole && user?.role !== requiredRole) {
     return <Navigate to="/dashboard" replace />;

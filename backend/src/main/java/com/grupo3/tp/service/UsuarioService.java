@@ -2,6 +2,7 @@ package com.grupo3.tp.service;
 
 import com.grupo3.tp.models.Usuario;
 import com.grupo3.tp.repository.UsuarioRepository;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -14,6 +15,14 @@ public class UsuarioService {
 
     public UsuarioService(UsuarioRepository repository) {
         this.repository = repository;
+    }
+
+    public Usuario loadUserByUsername(String username){
+        Optional<Usuario> usuario = this.repository.findByUsername(username);
+        if(usuario.isEmpty()){
+            throw new UsernameNotFoundException("no se encontro el usuairo de username: "+" "+username);
+        }
+        return usuario.get();
     }
 
     public Usuario crear(Usuario usuario) {

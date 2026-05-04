@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import { authService } from '../../services/auth/auth.service';
 import bgImage from '../../assets/mundial-2026-cartel-fifa.jpg';
 
 export default function RegisterPage() {
@@ -10,8 +11,9 @@ export default function RegisterPage() {
   const [password, setPassword] = useState('');
   const [confirm, setConfirm] = useState('');
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (e: React.SyntheticEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError('');
 
@@ -20,8 +22,15 @@ export default function RegisterPage() {
       return;
     }
 
-    // TODO: conectar con backend
-    navigate('/login');
+    setLoading(true);
+    try {
+      await authService.register({ username, email, password });
+      navigate('/login');
+    } catch {
+      setError('No se pudo crear la cuenta. El usuario o email ya existe.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -113,10 +122,11 @@ export default function RegisterPage() {
 
             <button
               type="submit"
-              className="w-full py-2.5 rounded-lg text-sm font-bold text-white transition-all duration-150 hover:opacity-90 active:scale-95 mt-1"
+              disabled={loading}
+              className="w-full py-2.5 rounded-lg text-sm font-bold text-white transition-all duration-150 hover:opacity-90 active:scale-95 mt-1 disabled:opacity-60 disabled:cursor-not-allowed"
               style={{ background: '#05B15A' }}
             >
-              Registrarse
+              {loading ? 'Registrando...' : 'Registrarse'}
             </button>
           </form>
 

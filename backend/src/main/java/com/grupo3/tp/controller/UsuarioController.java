@@ -1,5 +1,6 @@
 package com.grupo3.tp.controller;
 
+import com.grupo3.tp.dtos.Usuariodto;
 import com.grupo3.tp.models.Usuario;
 import com.grupo3.tp.service.UsuarioService;
 import org.springframework.http.HttpStatus;
@@ -31,7 +32,8 @@ public class UsuarioController {
     }
 
     @PostMapping
-    public ResponseEntity<Usuario> create(@RequestBody Usuario usuario) {
+    public ResponseEntity<Usuario> create(@RequestBody Usuariodto usuariodto) {
+        Usuario usuario = new Usuario(usuariodto.getUsername(),usuariodto.getPassword(),usuariodto.getEmail());
         return ResponseEntity.status(HttpStatus.CREATED).body(service.crear(usuario));
     }
 
