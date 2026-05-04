@@ -116,7 +116,7 @@ export default function BuscarPage() {
             <div key={figurita.id} className="bg-surface p-4 rounded-lg border border-border">
             <p className= "text-sm font-bold text-text mb-2">{figurita.id}</p>
             <p className="text-sm text-muted mb-2">{figurita.figuritaBase.seleccion.nombre}</p>
-            <p className="text-xl font-bold text-primary mb-2">{figurita.figuritaBase.jugador.nombre}</p>
+            <p className="text-xl font-bold text-primary mb-2">{figurita.figuritaBase.id} - {figurita.figuritaBase.jugador.nombre}</p>
             <p className="text-sm text-text mb-3">{figurita.figuritaBase.equipo.nombre}</p>
             <p className="text-xs text-muted mb-4">{figurita.figuritaBase.categoria.nombre}</p>
 

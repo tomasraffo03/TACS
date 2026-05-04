@@ -1,75 +1,68 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useEffect } from 'react';
+import { useAuth } from '../../auth/useAuth';
 
 export default function NotificacionesPage() {
   const navigate = useNavigate();
 
-  // Mock data - Different types of notifications
-  const [notificaciones, setNotificaciones] = useState([
-    {
-      id: "notif-1",
-      tipo: "propuesta",
-      titulo: "Nueva propuesta recibida",
-      mensaje: "Juan Pérez envió una propuesta por tu figurita de Mbappé",
-      fecha: "2025-04-27 14:30",
-      leida: false,
-      accion: () => navigate('/propuestas/recibidas'),
-    },
-    {
-      id: "notif-2",
-      tipo: "figurita-faltante",
-      titulo: "Figurita faltante encontrada",
-      mensaje: "¡Encontramos la figurita #532 Messi que te faltaba!",
-      fecha: "2025-04-27 12:15",
-      leida: false,
-      accion: () => navigate('/buscar'),
-    },
-    {
-      id: "notif-3",
-      tipo: "subasta",
-      titulo: "Subasta por finalizar",
-      mensaje: "La subasta de Neymar finaliza en 2 horas",
-      fecha: "2025-04-27 10:45",
-      leida: true,
-      accion: () => navigate('/subastas/activas'),
-    },
-    {
-      id: "notif-4",
-      tipo: "propuesta",
-      titulo: "Propuesta aceptada",
-      mensaje: "María Gómez aceptó tu propuesta por el Neymar",
-      fecha: "2025-04-26 16:20",
-      leida: true,
-      accion: () => navigate('/propuestas/enviadas'),
-    },
-    {
-      id: "notif-5",
-      tipo: "figurita-faltante",
-      titulo: "Figurita faltante encontrada",
-      mensaje: "¡Encontramos la figurita #10 Di María que te faltaba!",
-      fecha: "2025-04-26 09:30",
-      leida: true,
-      accion: () => navigate('/buscar'),
-    },
-  ]);
+  
+  const { user } = useAuth();
+
+  const [notificaciones, setNotificaciones] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (!user?.id) return;
+  
+    fetch(`http://localhost:8080/api/notificaciones/usuario/${user.id}`)
+      .then(res => res.json())
+      .then(data => {
+        setNotificaciones(data);
+        setLoading(false);
+      })
+      .catch(error => {
+        console.error('Error fetching notificaciones:', error);
+        setLoading(false);
+      });
+    }, [user?.id]);
 
   // Mark notification as read
   const handleLeerNotificacion = (id: string) => {
-    setNotificaciones(prev =>
-      prev.map(notif => 
-        notif.id === id ? { ...notif, leida: true } : notif
-      )
-    );
+  fetch(`http://localhost:8080/api/notificaciones/${id}/leer`, {
+    method: 'PUT'
+    })
+    .then(res => res.json())
+    .then(data => {
+      setNotificaciones(prev =>
+        prev.map(notif => 
+        notif.id === id ? data : notif
+        )
+      );
+      })
+    .catch(error => console.error('Error:', error));
   };
 
   // Delete notification
   const handleEliminarNotificacion = (id: string) => {
+  fetch(`http://localhost:8080/api/notificaciones/${id}`, {
+    method: 'DELETE'
+  })
+  .then(() => {
     setNotificaciones(prev => prev.filter(notif => notif.id !== id));
+  })
+  .catch(error => console.error('Error:', error));
   };
 
   // Clear all notifications
   const handleLimpiarTodas = () => {
-    setNotificaciones([]);
+  notificaciones.forEach(notif => {
+    fetch(`http://localhost:8080/api/notificaciones/${notif.id}`, {
+      method: 'DELETE'
+    })
+    .catch(error => console.error('Error:', error));
+  });
+  setNotificaciones([]);
   };
 
   // Get icon based on type
@@ -101,6 +94,15 @@ export default function NotificacionesPage() {
   };
 
   const notificacionesNoLeidas = notificaciones.filter(n => !n.leida).length;
+
+
+  if (loading) {
+  return (
+    <div className="page-enter">
+      <p className="text-text">Cargando notificaciones...</p>
+    </div>
+  );
+  }
 
   return (
     <div className="page-enter">
@@ -140,8 +142,8 @@ export default function NotificacionesPage() {
               <div className="flex items-start justify-between gap-3">
                 <div className="flex-1 cursor-pointer" onClick={() => {
                   handleLeerNotificacion(notif.id);
-                  notif.accion();
-                }}>
+                  if (notif.enlace) navigate(notif.enlace);
+                  }}>
                   <div className="flex items-center gap-2 mb-1">
                     <span className="text-xl">{getIconoTipo(notif.tipo)}</span>
                     <p className={`font-semibold ${!notif.leida ? 'text-primary' : 'text-text'}`}>

@@ -38,4 +38,5 @@ public class FiguritaRepository {
     public boolean existsById(String id) {
         return store.containsKey(id);
     }
+
 }

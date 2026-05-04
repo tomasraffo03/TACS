@@ -12,4 +12,5 @@ import lombok.NoArgsConstructor;
 public class Figurita {
     private String id;
     private FiguritaBase figuritaBase;
+    private Usuario owner;
 }

@@ -1,40 +1,18 @@
 import { useLocation, useNavigate } from 'react-router-dom';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useAuth } from '../../auth/useAuth';
 
 export default function PropuestasNuevaPage() {
   const location = useLocation();
   const navigate = useNavigate();
+  const { user } = useAuth();  
   const figuritaDelLink = location.state?.figuritaSeleccionada;
+  
+  const [misFiguritas, setMisFiguritas] = useState([]);
+  const [loadingMisFiguritas, setLoadingMisFiguritas] = useState(true);
 
-  // Mock data - figuritas the user owns
-  const misFiguritas = [
-    {
-      id: "mia-1",
-      figuritaBase: {
-        seleccion: { id: "sel-3", nombre: "France", grupo: "D" },
-        equipo: { id: "eq-3", nombre: "PSG" },
-        categoria: { id: "cat-2", nombre: "Plata" },
-        jugador: { id: "jug-3", nombre: "Mbappé" },
-      },
-    },
-    {
-      id: "mia-2",
-      figuritaBase: {
-        seleccion: { id: "sel-4", nombre: "Germany", grupo: "E" },
-        equipo: { id: "eq-4", nombre: "Bayern" },
-        categoria: { id: "cat-2", nombre: "Plata" },
-        jugador: { id: "jug-4", nombre: "Müller" },
-      },
-    },
-  ];
-
-  // State for selected figurita to request
   const [figuritaSeleccionada, setFiguritaSeleccionada] = useState<string>(figuritaDelLink?.id || "");
-
-  // State for selected figuritas to offer
   const [figuritasOfrecidas, setFiguritasOfrecidas] = useState<string[]>([]);
-
-  // State for expanded/collapsed accordion
   const [expandedMias, setExpandedMias] = useState<boolean>(false);
 
   // Handle checkbox for figuritas to offer
@@ -52,15 +30,46 @@ export default function PropuestasNuevaPage() {
       alert("Debes seleccionar una figurita que quieres y al menos una que ofreces");
       return;
     }
-    console.log("Propuesta enviada:", { figuritaSeleccionada, figuritasOfrecidas });
-    alert("Propuesta enviada!");
+
+    const newProposal = {
+      id: `prop-${Date.now()}`,
+      usuarioOrigen: user?.id,
+      usuarioDestino: figuritaDelLink?.owner?.id,
+      figuritaDeseada: figuritaSeleccionada,
+      figuritasOfrecidas: figuritasOfrecidas,
+      estado: "pendiente",
+      fecha: new Date().toISOString(),
+    };
+
+    const existingProposals = JSON.parse(localStorage.getItem('propuestas_enviadas') || '[]');
+    existingProposals.push(newProposal);
+    localStorage.setItem('propuestas_enviadas', JSON.stringify(existingProposals));
+
+    console.log("Propuesta enviada:", newProposal);
+    alert("¡Propuesta enviada!");
+    navigate('/propuestas/enviadas');
   };
+
+  useEffect(() => {
+    if (!user?.id) return;
+    
+    fetch(`http://localhost:8080/api/usuarios/${user.id}`)
+      .then(res => res.json())
+      .then(data => {
+        setMisFiguritas(data.figuritas || []);
+        setLoadingMisFiguritas(false);
+      })
+      .catch(error => {
+        console.error('Error fetching figuritas:', error);
+        setLoadingMisFiguritas(false);
+      });
+  }, [user?.id]);
 
   return (
     <div className="page-enter">
       <h2 className="text-xl font-semibold text-text mb-4">Propuestas · Nueva</h2>
 
-      {/* Section 1: Figurita que quieres (Just a button, no accordion) */}
+      {/* Section 1: Figurita que quieres */}
       <div className="mb-8">
         <h3 className="text-lg font-semibold text-text mb-4">¿Qué figurita quieres?</h3>
         <button 
@@ -79,7 +88,7 @@ export default function PropuestasNuevaPage() {
         )}
       </div>
 
-      {/* Section 2: Figuritas que ofreces (Accordion) */}
+      {/* Section 2: Figuritas que ofreces */}
       <div className="mb-8">
         <button
           onClick={() => setExpandedMias(!expandedMias)}

@@ -16,5 +16,6 @@ public class SolicitudDeIntercambio {
     private Usuario usuario;
     private Figurita figurita;
     private Integer cantidadDisponible;
-    private List<Oferta> ofertas;
+
+    //private List<Oferta> ofertas;
 }
