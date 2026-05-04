@@ -1,4 +1,4 @@
-import { NavLink, Outlet, useMatch } from 'react-router-dom';
+import { NavLink, Outlet } from 'react-router-dom';
 
 const RED = '#D82D31';
 
@@ -10,7 +10,6 @@ const subLinks = [
 ];
 
 export default function SubastasPage() {
-  const isIndex = useMatch('/subastas');
   return (
     <div className="page-enter flex flex-col gap-6">
       {/* Título */}
@@ -49,9 +48,7 @@ export default function SubastasPage() {
         ))}
       </nav>
 
-      {isIndex
-        ? <p className="text-sm text-gray-400">Seleccioná una sección.</p>
-        : <Outlet />}
+      <Outlet />
     </div>
   );
 }

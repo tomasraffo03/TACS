@@ -89,7 +89,7 @@ export function mapFigurita(f: BackendFigurita): Sticker {
 export function mapCondicion(c: BackendCondicion): AuctionCondition | null {
   const { tipo, valor = '' } = c;
   if (tipo === 'min_stickers') return { type: 'min_stickers', value: parseInt(valor, 10) };
-  if (tipo === 'country')      return { type: 'country', value: valor };
+  if (tipo === 'country') return { type: 'country', value: valor };
   if (tipo === 'specific_sticker') return { type: 'specific_sticker', value: parseInt(valor, 10) };
   return null;
 }
@@ -141,9 +141,14 @@ export function mapSubasta(s: BackendSubasta, currentUserId?: string): Auction {
 // ── Fetch helper ──────────────────────────────────────────────────────────────
 
 export async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> {
+  const token = localStorage.getItem('token');
+  const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+  if (token) {
+    headers.Authorization = `Bearer ${token}`;
+  }
   const res = await fetch(`${BASE_URL}${path}`, {
-    headers: { 'Content-Type': 'application/json' },
     ...init,
+    headers: { ...headers, ...(init?.headers as Record<string, string>) },
   });
   if (!res.ok) throw new Error(`API ${res.status}: ${path}`);
   if (res.status === 204) return undefined as T;
