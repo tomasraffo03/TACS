@@ -1,9 +1,41 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../../auth/useAuth';
 
+interface Usuario {
+  id: string;
+  username: string;
+  password?: string;
+  email?: string;
+  figuritas?: Figurita[];
+}
+
+interface FiguritaBase {
+  id: string;
+  numero?: number;
+  seleccion: { id: string; nombre: string; grupo: string };
+  equipo: { id: string; nombre: string };
+  categoria: { id: string; nombre: string };
+  jugador: { id: string; nombre: string };
+}
+
+interface Figurita {
+  id: string;
+  figuritaBase: FiguritaBase;
+  owner?: Usuario;
+}
+
+interface SolicitudDeIntercambio {
+  id: string;
+  usuario: Usuario;
+  figurita: Figurita;
+  figuritasOfrecidas: Figurita[];
+  cantidadDisponible: number;
+  estado: string;
+}
+
 export default function PropuestasRecibidasPage() {
   const { user } = useAuth();
-  const [propuestasRecibidas, setPropuestasRecibidas] = useState([]);
+  const [propuestasRecibidas, setPropuestasRecibidas] = useState<SolicitudDeIntercambio[]>([]);
   const [loading, setLoading] = useState(true);
   const [localState, setLocalState] = useState<{ [key: string]: string }>({});
 
