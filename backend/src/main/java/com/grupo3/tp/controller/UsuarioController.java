@@ -31,6 +31,12 @@ public class UsuarioController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
+    @GetMapping("/by-username/{userName}")
+    public ResponseEntity<Usuario> getByUserName(@PathVariable String userName) {
+         Usuario usuario = service.loadUserByUsername(userName);
+        return  ResponseEntity.ok(usuario);
+    }
+
     @PostMapping
     public ResponseEntity<Usuario> create(@RequestBody Usuariodto usuariodto) {
         Usuario usuario = new Usuario(usuariodto.getUsername(),usuariodto.getPassword(),usuariodto.getEmail());
