@@ -6,37 +6,37 @@ import PrivateRoute from '../components/PrivateRoute';
 import PublicRoute from '../components/PublicRoute';
 
 // ── Páginas públicas ──────────────────────────────────────────────────────────
-const LoginPage    = lazy(() => import('../pages/login/LoginPage'));
+const LoginPage = lazy(() => import('../pages/login/LoginPage'));
 const RegisterPage = lazy(() => import('../pages/registro/RegisterPage'));
 
 // ── Páginas protegidas ────────────────────────────────────────────────────────
-const DashboardPage      = lazy(() => import('../pages/home/DashboardPage'));
-const BuscarPage         = lazy(() => import('../pages/buscar/BuscarPage'));
-const IntercambiosPage   = lazy(() => import('../pages/intercambios/IntercambiosPage'));
+const DashboardPage = lazy(() => import('../pages/home/DashboardPage'));
+const BuscarPage = lazy(() => import('../pages/buscar/BuscarPage'));
+const IntercambiosPage = lazy(() => import('../pages/intercambios/IntercambiosPage'));
 const NotificacionesPage = lazy(() => import('../pages/notificaciones/NotificacionesPage'));
-const PerfilPage         = lazy(() => import('../pages/perfil/PerfilPage'));
-const HistorialPage      = lazy(() => import('../pages/perfil/HistorialPage'));
+const PerfilPage = lazy(() => import('../pages/perfil/PerfilPage'));
+const HistorialPage = lazy(() => import('../pages/perfil/HistorialPage'));
 
 // Colección
-const ColeccionPage      = lazy(() => import('../pages/coleccion/ColeccionPage'));
-const RepetidasPage      = lazy(() => import('../pages/coleccion/RepetidasPage'));
-const FaltantesPage      = lazy(() => import('../pages/coleccion/FaltantesPage'));
+const ColeccionPage = lazy(() => import('../pages/coleccion/ColeccionPage'));
+const RepetidasPage = lazy(() => import('../pages/coleccion/RepetidasPage'));
+const FaltantesPage = lazy(() => import('../pages/coleccion/FaltantesPage'));
 
 // Propuestas
-const PropuestasPage     = lazy(() => import('../pages/propuestas/PropuestasPage'));
-const PropNuevaPage      = lazy(() => import('../pages/propuestas/NuevaPage'));
-const PropRecibidasPage  = lazy(() => import('../pages/propuestas/RecibidasPage'));
-const PropEnviadasPage   = lazy(() => import('../pages/propuestas/EnviadasPage'));
+const PropuestasPage = lazy(() => import('../pages/propuestas/PropuestasPage'));
+const PropNuevaPage = lazy(() => import('../pages/propuestas/NuevaPage'));
+const PropRecibidasPage = lazy(() => import('../pages/propuestas/RecibidasPage'));
+const PropEnviadasPage = lazy(() => import('../pages/propuestas/EnviadasPage'));
 
 // Subastas
-const SubastasPage       = lazy(() => import('../pages/subastas/SubastasPage'));
-const SubNuevaPage       = lazy(() => import('../pages/subastas/NuevaPage'));
-const SubActivasPage     = lazy(() => import('../pages/subastas/ActivasPage'));
-const SubMiasPage        = lazy(() => import('../pages/subastas/MiasPage'));
+const SubastasPage = lazy(() => import('../pages/subastas/SubastasPage'));
+const SubNuevaPage = lazy(() => import('../pages/subastas/NuevaPage'));
+const SubActivasPage = lazy(() => import('../pages/subastas/ActivasPage'));
+const SubMiasPage = lazy(() => import('../pages/subastas/MiasPage'));
 const SubParticipandoPage = lazy(() => import('../pages/subastas/ParticipandoPage'));
 
 // Admin (solo rol "admin")
-const AdminPage          = lazy(() => import('../pages/admin/AdminPage'));
+const AdminPage = lazy(() => import('../pages/admin/AdminPage'));
 
 // ── Router ────────────────────────────────────────────────────────────────────
 const router = createBrowserRouter([
@@ -44,7 +44,7 @@ const router = createBrowserRouter([
   {
     element: <PublicRoute />,
     children: [
-      { path: '/login',    element: <LoginPage /> },
+      { path: '/login', element: <LoginPage /> },
       { path: '/register', element: <RegisterPage /> },
     ],
   },
@@ -57,11 +57,11 @@ const router = createBrowserRouter([
         element: <MainLayout />,
         children: [
           { index: true, element: <Navigate to="/dashboard" replace /> },
-          { path: 'dashboard',      element: <DashboardPage /> },
-          { path: 'buscar',         element: <BuscarPage /> },
-          { path: 'intercambios',   element: <IntercambiosPage /> },
+          { path: 'dashboard', element: <DashboardPage /> },
+          { path: 'buscar', element: <BuscarPage /> },
+          { path: 'intercambios', element: <IntercambiosPage /> },
           { path: 'notificaciones', element: <NotificacionesPage /> },
-          { path: 'perfil',          element: <PerfilPage /> },
+          { path: 'perfil', element: <PerfilPage /> },
           { path: 'perfil/historial', element: <HistorialPage /> },
 
           // Colección
@@ -79,9 +79,9 @@ const router = createBrowserRouter([
             path: 'propuestas',
             element: <PropuestasPage />,
             children: [
-              { path: 'nueva',     element: <PropNuevaPage /> },
+              { path: 'nueva', element: <PropNuevaPage /> },
               { path: 'recibidas', element: <PropRecibidasPage /> },
-              { path: 'enviadas',  element: <PropEnviadasPage /> },
+              { path: 'enviadas', element: <PropEnviadasPage /> },
             ],
           },
 
@@ -90,9 +90,10 @@ const router = createBrowserRouter([
             path: 'subastas',
             element: <SubastasPage />,
             children: [
-              { path: 'nueva',        element: <SubNuevaPage /> },
-              { path: 'activas',      element: <SubActivasPage /> },
-              { path: 'mias',         element: <SubMiasPage /> },
+              { index: true, element: <Navigate to="activas" replace /> },
+              { path: 'nueva', element: <SubNuevaPage /> },
+              { path: 'activas', element: <SubActivasPage /> },
+              { path: 'mias', element: <SubMiasPage /> },
               { path: 'participando', element: <SubParticipandoPage /> },
             ],
           },

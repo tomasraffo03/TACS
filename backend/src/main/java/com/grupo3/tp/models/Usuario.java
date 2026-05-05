@@ -28,12 +28,14 @@ public class Usuario implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority("ROLE_" + role.name()));
+        Role effectiveRole = (role != null) ? role : Role.USER;
+        return List.of(new SimpleGrantedAuthority("ROLE_" + effectiveRole.name()));
     }
     public Usuario(String username,String password,String email){
         this.email=email;
         this.username=username;
         this.password=password;
+        this.role=Role.USER;
         this.subastasFavoritas= new ArrayList<>();
         this.figuritas=new ArrayList<>();
     }
