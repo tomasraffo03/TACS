@@ -2,8 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useEffect } from 'react';
 import { useAuth } from '../../auth/useAuth';
-
-export default function NotificacionesPage() {
+import api from '../../services/api';
 
   interface Notificacion {
   id: string;
@@ -40,6 +39,10 @@ interface Figurita {
 }
 
 
+
+export default function NotificacionesPage() {
+
+
   const navigate = useNavigate();
  
   const { user } = useAuth();
@@ -49,10 +52,9 @@ interface Figurita {
   useEffect(() => {
     if (!user?.id) return;
   
-    fetch(`http://localhost:8080/api/notificaciones/usuario/${user.id}`)
-      .then(res => res.json())
-      .then(data => {
-        setNotificaciones(data);
+    api.get(`/notificaciones/usuario/${user.id}`)
+      .then(res => {
+        setNotificaciones(res.data);
         setLoading(false);
       })
       .catch(error => {
@@ -63,14 +65,11 @@ interface Figurita {
 
   // Mark notification as read
   const handleLeerNotificacion = (id: string) => {
-  fetch(`http://localhost:8080/api/notificaciones/${id}/leer`, {
-    method: 'PUT'
-    })
-    .then(res => res.json())
-    .then(data => {
+  api.put(`/notificaciones/${id}/leer`)
+    .then(res => {
       setNotificaciones(prev =>
         prev.map(notif => 
-        notif.id === id ? data : notif
+        notif.id === id ? res.data : notif
         )
       );
       })
@@ -79,9 +78,7 @@ interface Figurita {
 
   // Delete notification
   const handleEliminarNotificacion = (id: string) => {
-  fetch(`http://localhost:8080/api/notificaciones/${id}`, {
-    method: 'DELETE'
-  })
+  api.delete(`/notificaciones/${id}`)
   .then(() => {
     setNotificaciones(prev => prev.filter(notif => notif.id !== id));
   })
@@ -91,9 +88,7 @@ interface Figurita {
   // Clear all notifications
   const handleLimpiarTodas = () => {
   notificaciones.forEach(notif => {
-    fetch(`http://localhost:8080/api/notificaciones/${notif.id}`, {
-      method: 'DELETE'
-    })
+    api.delete(`/notificaciones/${notif.id}`)
     .catch(error => console.error('Error:', error));
   });
   setNotificaciones([]);

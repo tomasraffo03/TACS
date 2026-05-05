@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../../auth/useAuth';
+import api from '../../services/api';
 
 interface Usuario {
   id: string;
@@ -45,10 +46,9 @@ export default function PropuestasEnviadasPage() {
   useEffect(() => {
     if (!user?.id) return;
 
-    fetch(`http://localhost:8080/api/solicitudes-intercambio/enviadas/${user.id}`)
-      .then(res => res.json())
-      .then(data => {
-        setPropuestasEnviadas(data);
+    api.get(`/solicitudes-intercambio/enviadas/${user.id}`)
+      .then(res => {
+        setPropuestasEnviadas(res.data);
         setLoading(false);
       })
       .catch(error => {
