@@ -2,15 +2,36 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { useAuth } from '../../auth/useAuth';
 
+interface Usuario {
+  id: string;
+  username: string;
+  password?: string;
+  email?: string;
+  figuritas?: Figurita[];
+}
+
+interface FiguritaBase {
+  id: string;
+  numero?: number;
+  seleccion: { id: string; nombre: string; grupo: string };
+  equipo: { id: string; nombre: string };
+  categoria: { id: string; nombre: string };
+  jugador: { id: string; nombre: string };
+}
+
+interface Figurita {
+  id: string;
+  figuritaBase: FiguritaBase;
+  owner?: Usuario;
+}
+
 export default function PropuestasNuevaPage() {
   const location = useLocation();
   const navigate = useNavigate();
   const { user } = useAuth();  
-  const figuritaDelLink = location.state?.figuritaSeleccionada;
   
-  const [misFiguritas, setMisFiguritas] = useState([]);
-  const [loadingMisFiguritas, setLoadingMisFiguritas] = useState(true);
-
+  const figuritaDelLink = location.state?.figuritaSeleccionada as Figurita | undefined;
+  const [misFiguritas, setMisFiguritas] = useState<Figurita[]>([]);
   const [figuritaSeleccionada, setFiguritaSeleccionada] = useState<string>(figuritaDelLink?.id || "");
   const [figuritasOfrecidas, setFiguritasOfrecidas] = useState<string[]>([]);
   const [expandedMias, setExpandedMias] = useState<boolean>(false);
@@ -62,11 +83,9 @@ export default function PropuestasNuevaPage() {
       .then(res => res.json())
       .then(data => {
         setMisFiguritas(data.figuritas || []);
-        setLoadingMisFiguritas(false);
       })
       .catch(error => {
         console.error('Error fetching figuritas:', error);
-        setLoadingMisFiguritas(false);
       });
   }, [user?.id]);
 
