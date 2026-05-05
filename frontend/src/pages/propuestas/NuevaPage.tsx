@@ -49,6 +49,13 @@ export default function PropuestasNuevaPage() {
 
   // Handle submit
   const handleSubmit = () => {
+
+    if (figuritaSeleccionada === user?.id) {
+    alert("No puedes querer tu propia figurita");
+    return;
+    }
+
+
     if (!figuritaSeleccionada || figuritasOfrecidas.length === 0) {
       alert("Debes seleccionar una figurita que quieres y al menos una que ofreces");
       return;
@@ -76,7 +83,7 @@ export default function PropuestasNuevaPage() {
   useEffect(() => {
     if (!user?.id) return;
     
-    api.get(`/api/usuarios/${user.id}`)
+    api.get(`/api/usuarios/by-username/${user.username}`)
       .then(res => {
         setMisFiguritas(res.data.figuritas || []);
       })
