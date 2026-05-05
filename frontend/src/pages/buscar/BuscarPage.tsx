@@ -34,7 +34,7 @@ export default function BuscarPage() {
 
     //Buscar booting
     useEffect( () => {
-      api.get('/figuritas')
+      api.get('/api/figuritas')
       .then(res => {
       setFiguritas(res.data);
       setLoading(false);

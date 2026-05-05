@@ -61,7 +61,7 @@ export default function PropuestasNuevaPage() {
       estado: "pendiente"
     };
 
-    api.post('/solicitudes-intercambio',newSolicitud)
+    api.post('/api/solicitudes-intercambio',newSolicitud)
     .then(res => {
       console.log("Propuesta enviada:", res.data);
       alert("¡Propuesta enviada!");
@@ -76,7 +76,7 @@ export default function PropuestasNuevaPage() {
   useEffect(() => {
     if (!user?.id) return;
     
-    api.get(`/usuarios/${user.id}`)
+    api.get(`/api/usuarios/${user.id}`)
       .then(res => {
         setMisFiguritas(res.data.figuritas || []);
       })
