@@ -64,6 +64,7 @@ export default function PropuestasRecibidasPage() {
       method: 'PUT'
     })
     .then(res => res.json())
+    // @ts-ignore
     .then(data => {
       setLocalState(prev => ({ ...prev, [propuestaId]: "aceptado" }));
       console.log(`Propuesta ${propuestaId} aceptada`);
@@ -79,6 +80,7 @@ export default function PropuestasRecibidasPage() {
       method: 'PUT'
     })
     .then(res => res.json())
+    // @ts-ignore
     .then(data => {
       setLocalState(prev => ({ ...prev, [propuestaId]: "rechazado" }));
       console.log(`Propuesta ${propuestaId} rechazada`);
