@@ -43,7 +43,7 @@ export default function PropuestasRecibidasPage() {
   useEffect(() => {
     if (!user?.id) return;
 
-    api.get(`/solicitudes-intercambio/recibidas/${user.id}`)
+    api.get(`/api/solicitudes-intercambio/recibidas/${user.id}`)
       .then(res => {
         setPropuestasRecibidas(res.data);
         const initialState = res.data.reduce((acc: any, prop: any) => ({ 
@@ -60,7 +60,7 @@ export default function PropuestasRecibidasPage() {
   }, [user?.id]);
 
   const handleAceptar = (propuestaId: string) => {
-    api.put(`/solicitudes-intercambio/${propuestaId}/aceptar`)
+    api.put(`/api/solicitudes-intercambio/${propuestaId}/aceptar`)
     .then(() => {
       setLocalState(prev => ({ ...prev, [propuestaId]: "aceptado" }));
       console.log(`Propuesta ${propuestaId} aceptada`);
@@ -72,7 +72,7 @@ export default function PropuestasRecibidasPage() {
   };
 
   const handleRechazar = (propuestaId: string) => {
-    api.put(`/solicitudes-intercambio/${propuestaId}/rechazar`)
+    api.put(`/api/solicitudes-intercambio/${propuestaId}/rechazar`)
     .then(() => {
       setLocalState(prev => ({ ...prev, [propuestaId]: "rechazado" }));
       console.log(`Propuesta ${propuestaId} rechazada`);

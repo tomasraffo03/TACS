@@ -46,7 +46,7 @@ export default function PropuestasEnviadasPage() {
   useEffect(() => {
     if (!user?.id) return;
 
-    api.get(`/solicitudes-intercambio/enviadas/${user.id}`)
+    api.get(`/api/solicitudes-intercambio/enviadas/${user.id}`)
       .then(res => {
         setPropuestasEnviadas(res.data);
         setLoading(false);

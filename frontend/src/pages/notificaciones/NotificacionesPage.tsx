@@ -52,7 +52,7 @@ export default function NotificacionesPage() {
   useEffect(() => {
     if (!user?.id) return;
   
-    api.get(`/notificaciones/usuario/${user.id}`)
+    api.get(`/api/notificaciones/usuario/${user.id}`)
       .then(res => {
         setNotificaciones(res.data);
         setLoading(false);
@@ -65,7 +65,7 @@ export default function NotificacionesPage() {
 
   // Mark notification as read
   const handleLeerNotificacion = (id: string) => {
-  api.put(`/notificaciones/${id}/leer`)
+  api.put(`/api/notificaciones/${id}/leer`)
     .then(res => {
       setNotificaciones(prev =>
         prev.map(notif => 
@@ -78,7 +78,7 @@ export default function NotificacionesPage() {
 
   // Delete notification
   const handleEliminarNotificacion = (id: string) => {
-  api.delete(`/notificaciones/${id}`)
+  api.delete(`/api/notificaciones/${id}`)
   .then(() => {
     setNotificaciones(prev => prev.filter(notif => notif.id !== id));
   })
@@ -88,7 +88,7 @@ export default function NotificacionesPage() {
   // Clear all notifications
   const handleLimpiarTodas = () => {
   notificaciones.forEach(notif => {
-    api.delete(`/notificaciones/${notif.id}`)
+    api.delete(`/api/notificaciones/${notif.id}`)
     .catch(error => console.error('Error:', error));
   });
   setNotificaciones([]);
