@@ -30,6 +30,7 @@ public class FiguritaController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
+
     @PostMapping
     public ResponseEntity<Figurita> create(@RequestBody Figurita figurita) {
         return ResponseEntity.status(HttpStatus.CREATED).body(service.crear(figurita));
