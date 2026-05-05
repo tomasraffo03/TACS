@@ -1,6 +1,7 @@
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { useAuth } from '../../auth/useAuth';
+import api from '../../services/api';
 
 interface Usuario {
   id: string;
@@ -60,14 +61,9 @@ export default function PropuestasNuevaPage() {
       estado: "pendiente"
     };
 
-    fetch('http://localhost:8080/api/solicitudes-intercambio', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(newSolicitud)
-    })
-    .then(res => res.json())
-    .then(data => {
-      console.log("Propuesta enviada:", data);
+    api.post('/solicitudes-intercambio',newSolicitud)
+    .then(res => {
+      console.log("Propuesta enviada:", res.data);
       alert("¡Propuesta enviada!");
       navigate('/propuestas/enviadas');
     })
@@ -80,10 +76,9 @@ export default function PropuestasNuevaPage() {
   useEffect(() => {
     if (!user?.id) return;
     
-    fetch(`http://localhost:8080/api/usuarios/${user.id}`)
-      .then(res => res.json())
-      .then(data => {
-        setMisFiguritas(data.figuritas || []);
+    api.get(`/usuarios/${user.id}`)
+      .then(res => {
+        setMisFiguritas(res.data.figuritas || []);
       })
       .catch(error => {
         console.error('Error fetching figuritas:', error);

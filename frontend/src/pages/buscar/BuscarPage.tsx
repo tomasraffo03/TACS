@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
+import api from '../../services/api';
 
 
   interface FiguritaBase {
@@ -18,7 +19,6 @@ interface Figurita {
 }
 
 
-
 export default function BuscarPage() {
 
 
@@ -34,11 +34,10 @@ export default function BuscarPage() {
 
     //Buscar booting
     useEffect( () => {
-      fetch('http://localhost:8080/api/figuritas')
-      .then(res => res.json())
-      .then(data => {
-        setFiguritas(data);
-        setLoading(false);
+      api.get('/figuritas')
+      .then(res => {
+      setFiguritas(res.data);
+      setLoading(false);
       })
       .catch(error => {
         console.error('Error fetching figuritas:', error);

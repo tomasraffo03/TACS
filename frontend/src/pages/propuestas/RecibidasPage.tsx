@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../../auth/useAuth';
+import api from '../../services/api';
 
 interface Usuario {
   id: string;
@@ -42,11 +43,10 @@ export default function PropuestasRecibidasPage() {
   useEffect(() => {
     if (!user?.id) return;
 
-    fetch(`http://localhost:8080/api/solicitudes-intercambio/recibidas/${user.id}`)
-      .then(res => res.json())
-      .then(data => {
-        setPropuestasRecibidas(data);
-        const initialState = data.reduce((acc: any, prop: any) => ({ 
+    api.get(`/solicitudes-intercambio/recibidas/${user.id}`)
+      .then(res => {
+        setPropuestasRecibidas(res.data);
+        const initialState = res.data.reduce((acc: any, prop: any) => ({ 
           ...acc, 
           [prop.id]: prop.estado 
         }), {});
@@ -60,12 +60,8 @@ export default function PropuestasRecibidasPage() {
   }, [user?.id]);
 
   const handleAceptar = (propuestaId: string) => {
-    fetch(`http://localhost:8080/api/solicitudes-intercambio/${propuestaId}/aceptar`, {
-      method: 'PUT'
-    })
-    .then(res => res.json())
-    // @ts-ignore
-    .then(data => {
+    api.put(`/solicitudes-intercambio/${propuestaId}/aceptar`)
+    .then(() => {
       setLocalState(prev => ({ ...prev, [propuestaId]: "aceptado" }));
       console.log(`Propuesta ${propuestaId} aceptada`);
     })
@@ -76,12 +72,8 @@ export default function PropuestasRecibidasPage() {
   };
 
   const handleRechazar = (propuestaId: string) => {
-    fetch(`http://localhost:8080/api/solicitudes-intercambio/${propuestaId}/rechazar`, {
-      method: 'PUT'
-    })
-    .then(res => res.json())
-    // @ts-ignore
-    .then(data => {
+    api.put(`/solicitudes-intercambio/${propuestaId}/rechazar`)
+    .then(() => {
       setLocalState(prev => ({ ...prev, [propuestaId]: "rechazado" }));
       console.log(`Propuesta ${propuestaId} rechazada`);
     })
