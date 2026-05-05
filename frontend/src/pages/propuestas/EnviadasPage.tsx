@@ -1,9 +1,45 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../../auth/useAuth';
 
+interface Usuario {
+  id: string;
+  username: string;
+  password?: string;
+  email?: string;
+  figuritas?: Figurita[];
+}
+
+interface FiguritaBase {
+  id: string;
+  numero?: number;
+  seleccion: { id: string; nombre: string; grupo: string };
+  equipo: { id: string; nombre: string };
+  categoria: { id: string; nombre: string };
+  jugador: { id: string; nombre: string };
+}
+
+interface Figurita {
+  id: string;
+  figuritaBase: FiguritaBase;
+  owner?: Usuario;
+}
+
+interface SolicitudDeIntercambio {
+  id: string;
+  usuario: Usuario;
+  figurita: Figurita;
+  figuritasOfrecidas: Figurita[];
+  cantidadDisponible: number;
+  estado: string;
+}
+
+
 export default function PropuestasEnviadasPage() {
+
+
+
   const { user } = useAuth();
-  const [propuestasEnviadas, setPropuestasEnviadas] = useState([]);
+  const [propuestasEnviadas, setPropuestasEnviadas] = useState<SolicitudDeIntercambio[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -89,7 +125,7 @@ export default function PropuestasEnviadasPage() {
                 <p className="text-sm text-muted mb-2">Figuritas que ofreciste:</p>
                 <div className="space-y-1">
                   {propuesta.figuritasOfrecidas && propuesta.figuritasOfrecidas.length > 0 ? (
-                    propuesta.figuritasOfrecidas.map(fig => (
+                    propuesta.figuritasOfrecidas.map((fig: Figurita) => (
                       <p key={fig.id} className="text-text text-sm">
                         • {fig.figuritaBase?.jugador?.nombre || 'N/A'} - {fig.figuritaBase?.seleccion?.nombre || 'N/A'}
                       </p>

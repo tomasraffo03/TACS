@@ -1,10 +1,29 @@
 import { useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 
+
+  interface FiguritaBase {
+  id: string;
+  numero?: number;
+  seleccion: { id: string; nombre: string; grupo: string };
+  equipo: { id: string; nombre: string };
+  categoria: { id: string; nombre: string };
+  jugador: { id: string; nombre: string };
+}
+
+interface Figurita {
+  id: string;
+  figuritaBase: FiguritaBase;
+  owner?: { id: string; username: string };
+}
+
+
+
 export default function BuscarPage() {
 
+
     const navigate = useNavigate();
-    const [figuritas, setFiguritas] = useState([]);
+    const [figuritas, setFiguritas] = useState<Figurita[]>([]);
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
     const [filterNumero, setFilterNumero] = useState('');

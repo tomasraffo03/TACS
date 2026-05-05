@@ -4,12 +4,46 @@ import { useEffect } from 'react';
 import { useAuth } from '../../auth/useAuth';
 
 export default function NotificacionesPage() {
+
+  interface Notificacion {
+  id: string;
+  usuario: Usuario;
+  tipo: string;
+  titulo: string;
+  mensaje: string;
+  leida: boolean;
+  fecha: string;
+  enlace: string;
+}
+
+interface Usuario {
+  id: string;
+  username: string;
+  password?: string;
+  email?: string;
+  figuritas?: Figurita[];
+}
+
+interface FiguritaBase {
+  id: string;
+  numero?: number;
+  seleccion: { id: string; nombre: string; grupo: string };
+  equipo: { id: string; nombre: string };
+  categoria: { id: string; nombre: string };
+  jugador: { id: string; nombre: string };
+}
+
+interface Figurita {
+  id: string;
+  figuritaBase: FiguritaBase;
+  owner?: Usuario;
+}
+
+
   const navigate = useNavigate();
-
-  
+ 
   const { user } = useAuth();
-
-  const [notificaciones, setNotificaciones] = useState([]);
+  const [notificaciones, setNotificaciones] = useState<Notificacion[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
