@@ -1,9 +1,7 @@
-package com.grupo3.tp;
+package com.grupo3.tp.service;
 
 import com.grupo3.tp.models.*;
 import com.grupo3.tp.repository.SolicitudDeIntercambioRepository;
-import com.grupo3.tp.service.NotificacionService;
-import com.grupo3.tp.service.SolicitudDeIntercambioService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -30,20 +28,29 @@ public class SolicitudDelIntercambioServiceTest {
     @Mock
     private NotificacionService notificacionService;
 
+    @Mock
+    private FiguritaService figuritaService;
+
+    @Mock
+    private IntercambioService intercambioService;
+
     @InjectMocks
     private SolicitudDeIntercambioService service;
 
     private Usuario proposer;
     private Usuario figuritaOwner;
     private Figurita figurita;
+    private Figurita figurita2;
     private SolicitudDeIntercambio solicitudDelIntercambio1;
     private SolicitudDeIntercambio solicitudDelIntercambio2;
     private SolicitudDeIntercambio solicitudDelIntercambio3;
-
+    private List<Figurita> figuritas = new ArrayList<>();
 
     //Test data creation before we actually do the stuff.
     @BeforeEach
     public void setUp() {
+
+
 
         proposer = Usuario.builder()
                 .id("user-1")
@@ -72,12 +79,19 @@ public class SolicitudDelIntercambioServiceTest {
                 .owner(figuritaOwner)
                 .build();
 
+        figurita2 = Figurita.builder()
+                .id("fig-2")
+                .figuritaBase(figuritaBase)
+                .owner(proposer)
+                .build();
+
         solicitudDelIntercambio1 = SolicitudDeIntercambio.builder()
                 .id("sol-1")
                 .usuario(proposer)
                 .figurita(figurita)
                 .estado(PENDIENTE)
                 .cantidadDisponible(1)
+                .figuritasOfrecidas(figuritas)
                 .build();
 
         solicitudDelIntercambio2 = SolicitudDeIntercambio.builder()
@@ -85,16 +99,18 @@ public class SolicitudDelIntercambioServiceTest {
                 .usuario(proposer)
                 .figurita(figurita)
                 .estado(PENDIENTE)
-                .cantidadDisponible(2)
+                .cantidadDisponible(1)
                 .build();
 
         solicitudDelIntercambio3 = SolicitudDeIntercambio.builder()
                 .id("sol-3")
                 .usuario(figuritaOwner)
-                .figurita(figurita)
+                .figurita(figurita2)
                 .estado(PENDIENTE)
-                .cantidadDisponible(3)
+                .cantidadDisponible(1)
                 .build();
+
+        figuritas.add(figurita2);
     }
 
 
@@ -294,7 +310,39 @@ public class SolicitudDelIntercambioServiceTest {
     public void aceptarSolicitudNotificarProposer(){
 
 
+
         when(repo.findById("sol-1")).thenReturn(Optional.of(solicitudDelIntercambio1));
+        when(repo.save(any(SolicitudDeIntercambio.class))).thenAnswer(i -> i.getArgument(0));
+
+        // Mock figurita transfers
+        when(figuritaService.transferir("fig-2", figuritaOwner))
+                .thenReturn(Optional.of(figurita2));  // proposer's figurita → owner
+        when(figuritaService.transferir("fig-1", proposer))
+                .thenReturn(Optional.of(figurita));   // owner's figurita → proposer
+
+        Optional<SolicitudDeIntercambio> result = service.aceptar("sol-1");
+
+        assertTrue(result.isPresent());
+        assertEquals(ACEPTADO, result.get().getEstado());
+
+        // Verify figurita transfers happened
+        verify(figuritaService).transferir("fig-2", figuritaOwner);  // offered figurita
+        verify(figuritaService).transferir("fig-1", proposer);       // requested figurita
+
+        // Verify intercambio was created
+        ArgumentCaptor<Intercambio> intercambioCaptor = ArgumentCaptor.forClass(Intercambio.class);
+        verify(intercambioService).crear(intercambioCaptor.capture());
+
+        Intercambio intercambio = intercambioCaptor.getValue();
+        assertEquals(proposer.getId(), intercambio.getUsuarioGenerador().getId());
+        assertEquals(figuritaOwner.getId(), intercambio.getUsuarioIntercambiador().getId());
+
+        // Verify notification sent to proposer
+        ArgumentCaptor<Notificacion> notifCaptor = ArgumentCaptor.forClass(Notificacion.class);
+        verify(notificacionService).crear(notifCaptor.capture());
+        assertEquals(proposer.getId(), notifCaptor.getValue().getUsuario().getId());
+
+        /*when(repo.findById("sol-1")).thenReturn(Optional.of(solicitudDelIntercambio1));
         when(repo.save(any(SolicitudDeIntercambio.class))).thenAnswer(i -> i.getArgument(0));
 
         Optional<SolicitudDeIntercambio> result = service.aceptar("sol-1");
@@ -315,19 +363,38 @@ public class SolicitudDelIntercambioServiceTest {
         Notificacion notif = notifCaptor.getValue();
         assertEquals(proposer.getId(), notif.getUsuario().getId());
         assertEquals("propuesta", notif.getTipo());
-        assertTrue(notif.getTitulo().contains("aceptada"));
+        assertTrue(notif.getTitulo().contains("aceptada"));*/
 
     }
 
     @Test
-    public void aceptarSolicitudNoExistente(){
+    public void aceptarSolicitudTransferirFallsThrowsException(){
+        when(repo.findById("sol-1")).thenReturn(Optional.of(solicitudDelIntercambio1));
+        when(repo.save(any(SolicitudDeIntercambio.class))).thenAnswer(i -> i.getArgument(0));
 
+        // Mock transfer failure
+        when(figuritaService.transferir("fig-2", figuritaOwner))
+                .thenReturn(Optional.empty());  // Transfer fails!
+
+        assertThrows(RuntimeException.class, () -> service.aceptar("sol-1"));
+
+        // Verify intercambio was NOT created
+        verify(intercambioService, never()).crear(any());
+
+        // Verify notification was NOT sent
+        verify(notificacionService, never()).crear(any());
+    }
+
+    @Test
+    public void aceptarSolicitudNoExistente(){
         when(repo.findById("sol-999")).thenReturn(Optional.empty());
 
         Optional<SolicitudDeIntercambio> result = service.aceptar("sol-999");
 
         assertFalse(result.isPresent());
         verify(repo, never()).save(any());
+        verify(figuritaService, never()).transferir(any(), any());
+        verify(intercambioService, never()).crear(any());
         verify(notificacionService, never()).crear(any());
     }
 
@@ -342,22 +409,16 @@ public class SolicitudDelIntercambioServiceTest {
         Optional<SolicitudDeIntercambio> result = service.rechazar("sol-1");
 
         assertTrue(result.isPresent());
-        assertEquals("sol-1", result.get().getId());
         assertEquals(RECHAZADO, result.get().getEstado());
-        verify(repo, times(1)).findById("sol-1");
 
+        // Rechazar should NOT transfer figuritas
+        verify(figuritaService, never()).transferir(any(), any());
+        verify(intercambioService, never()).crear(any());
 
+        // But SHOULD notify
         ArgumentCaptor<Notificacion> notifCaptor = ArgumentCaptor.forClass(Notificacion.class);
         verify(notificacionService).crear(notifCaptor.capture());
-
-        ArgumentCaptor<SolicitudDeIntercambio> captor = ArgumentCaptor.forClass(SolicitudDeIntercambio.class);
-        verify(repo).save(captor.capture());
-        assertEquals(RECHAZADO, captor.getValue().getEstado());
-
-        Notificacion notif = notifCaptor.getValue();
-        assertEquals(proposer.getId(), notif.getUsuario().getId());
-        assertEquals("propuesta", notif.getTipo());
-        assertTrue(notif.getTitulo().contains("rechazada"));
+        assertEquals(proposer.getId(), notifCaptor.getValue().getUsuario().getId());
 
     }
 

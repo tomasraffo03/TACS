@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -16,7 +17,7 @@ public class Intercambio {
     private String id;
     private Usuario usuarioGenerador;
     private Figurita figurita;
-    private Figurita figuritaIntercambiada;
+    private List<Figurita> figuritaIntercambiada;
     private Usuario usuarioIntercambiador;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime fecha;

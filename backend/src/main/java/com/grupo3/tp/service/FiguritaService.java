@@ -1,6 +1,7 @@
 package com.grupo3.tp.service;
 
 import com.grupo3.tp.models.Figurita;
+import com.grupo3.tp.models.Usuario;
 import com.grupo3.tp.repository.FiguritaRepository;
 import org.springframework.stereotype.Service;
 
@@ -42,5 +43,19 @@ public class FiguritaService {
         }
         repository.deleteById(id);
         return true;
+    }
+
+    public Optional<Figurita> transferir(String figuritaId, Usuario newOwner) {
+
+        if (!repository.existsById(figuritaId)){
+            return Optional.empty();
+        }
+
+        Figurita figurita = repository.findById(figuritaId).orElseThrow();
+      
+        figurita.setOwner(newOwner);
+
+        Figurita updated = repository.save(figurita);
+        return Optional.of(updated);
     }
 }
