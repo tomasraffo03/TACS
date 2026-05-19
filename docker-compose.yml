@@ -29,7 +29,27 @@ services:
       - tacs-net
     restart: unless-stopped
 
+  # ─────────────────────────────────────────────
+  # MONGODB — NoSQL Database
+  # ─────────────────────────────────────────────
+  mongodb:
+    image: mongo:latest
+    container_name: tacs-mongodb
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_USER}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD}
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - tacs-net
+    restart: unless-stopped
+
 # Red interna bridge: los contenedores se comunican por nombre de servicio
 networks:
   tacs-net:
     driver: bridge
+
+volumes:
+  mongodb_data:
